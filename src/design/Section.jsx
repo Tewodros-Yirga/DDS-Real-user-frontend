@@ -1,4 +1,4 @@
-import SectionSvg from "../assets/svg/SectionSvg";
+import SectionSvg from "../../assets/svg/SectionSvg";
 
 const section = ({
   className,
@@ -17,13 +17,13 @@ const section = ({
       } ${className || ""}`}
     >
       {children}
-      <div className="w-0.25 bg-stroke-1 lg:left-7.5 pointer-events-none absolute left-5 top-0 hidden h-full md:block xl:left-10" />
+      <div className="pointer-events-none absolute left-5 top-0 hidden h-full w-0.25 bg-stroke-1 md:block lg:left-7.5 xl:left-10" />
 
-      <div className="w-0.25 bg-stroke-1 lg:right-7.5 pointer-events-none absolute right-5 top-0 hidden h-full md:block xl:right-10" />
+      <div className="pointer-events-none absolute right-5 top-0 hidden h-full w-0.25 bg-stroke-1 md:block lg:right-7.5 xl:right-10" />
       {crosses && (
         <>
           <div
-            className={`left-7.5 right-7.5 h-0.25 bg-stroke-1 absolute top-0 hidden ${
+            className={`absolute left-7.5 right-7.5 top-0 hidden h-0.25 bg-stroke-1 ${
               crossesOffet && crossesOffet
             } pointer-events-none right-10 lg:block xl:left-10`}
           />
