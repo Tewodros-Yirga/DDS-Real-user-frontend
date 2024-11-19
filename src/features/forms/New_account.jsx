@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaLock, FaLockOpen, FaUserCircle } from "react-icons/fa";
 import { FiMail } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import Button from "../components/Button";
+import Button from "../../design/Button";
 
 const New_account = ({ onClose, switchToSignIn }) => {
   const [isShowPassword, setIsShowedPassword] = useState(false);
@@ -84,13 +84,13 @@ const New_account = ({ onClose, switchToSignIn }) => {
                 {isShowPassword2 ? (
                   <FaLockOpen
                     size={30}
-                    className=" cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => toggleShowPassword2()}
                   />
                 ) : (
                   <FaLock
                     size={30}
-                    className=" cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => toggleShowPassword2()}
                   />
                 )}
@@ -106,14 +106,14 @@ const New_account = ({ onClose, switchToSignIn }) => {
                 Confirm Password
               </label>
             </div>
-            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:text-color-1  hover:scale-105">
+            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:scale-105 hover:text-color-1">
               Register
             </Button>
             <div className="my-6 text-center text-sm font-medium text-white">
               <p>
                 Already have an account?{" "}
                 <span
-                  className="cursor-pointer font-semibold hover:underline hover:text-color-1 "
+                  className="cursor-pointer font-semibold hover:text-color-1 hover:underline"
                   onClick={switchToSignIn}
                 >
                   Login

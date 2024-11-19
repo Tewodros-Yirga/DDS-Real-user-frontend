@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { FiMail } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import Button from "../components/Button";
+import Button from "../../design/Button";
 import { FaLockOpen } from "react-icons/fa6";
 
 const SignIn = ({ onClose, switchToNewAccount }) => {
@@ -68,19 +68,19 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
               </label>
               <a
                 href="#"
-                className="my-3 cursor-pointer font-semibold hover:underline hover:text-color-1"
+                className="my-3 cursor-pointer font-semibold hover:text-color-1 hover:underline"
               >
                 Forgot Password ?
               </a>
             </div>
-            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:text-color-1 hover:scale-105">
+            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:scale-105 hover:text-color-1">
               LogIn
             </Button>
             <div className="my-6 text-center text-sm font-medium text-white">
               <p>
                 Don't have an account?{" "}
                 <span
-                  className="cursor-pointer font-semibold hover:underline hover:text-color-1"
+                  className="cursor-pointer font-semibold hover:text-color-1 hover:underline"
                   onClick={switchToNewAccount}
                 >
                   Register
