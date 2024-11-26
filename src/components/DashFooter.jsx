@@ -1,32 +1,27 @@
-import { MdHome } from "react-icons/md";
-import { useNavigate, useLocation } from "react-router-dom";
-
+import Section from "../design/section";
+import { socials } from "../constants";
 const DashFooter = () => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+return <>
+    <Section crosses className="!px-0 !py-10">
+    <div className="container flex sm:justify-between justify-center items-center gap-10 max-sm:flex-col">
+      <p className="caption text-n-1 lg:block">
+        © {new Date().getFullYear()}. All rights reserved.
+      </p>
 
-  const onGoHomeClicked = () => navigate("/");
-
-  let goHomeButton = null;
-  if (pathname !== "/") {
-    goHomeButton = (
-      <button
-        className="dash-footer__button icon-button"
-        title="Home"
-        onClick={onGoHomeClicked}
-      >
-        <MdHome color="red" />
-      </button>
-    );
-  }
-
-  const content = (
-    <footer className="dash-footer">
-      {goHomeButton}
-      <p>Current User:</p>
-      <p>Status:</p>
-    </footer>
-  );
-  return content;
+      <ul className="flex gap-5 flex-wrap">
+        {socials.map((item) => (
+          <a
+            key={item.id}
+            href={item.url}
+            target="_blank"
+            className="flex items-center justify-center  w-10 h-10 bg-n-1 rounded-full transition-colors hover:bg-color-1 "
+          >
+            <img src={item.iconUrl} width={16} height={16} alt={item.title} />
+          </a>
+        ))}
+      </ul>
+    </div>
+  </Section>
+</>
 };
 export default DashFooter;

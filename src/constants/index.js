@@ -1,4 +1,19 @@
-import { howItWorks1, howItWorks2, howItWorks3 } from "../assets";
+import {
+  howItWorks1,
+  howItWorks2,
+  howItWorks3,
+  benefitIcon1,
+  benefitIcon2,
+  benefitIcon3,
+  benefitIcon4,
+  benefitImage2,
+  instagram,
+  telegram,
+  twitter,
+  discordBlack,
+  facebook,
+} from "../assets";
+
 
 export const navigation = [
   {
@@ -18,22 +33,17 @@ export const navigation = [
   },
   {
     id: "3",
-    title: "How to",
-    url: "/how to",
-  },
-  {
-    id: "4",
     title: "Contact Us",
     url: "/contact",
   },
   {
-    id: "5",
+    id: "4",
     title: "New account",
     url: "#signup",
     onlyMobile: true,
   },
   {
-    id: "6",
+    id: "5",
     title: "Sign in",
     url: "#login",
     onlyMobile: true,
@@ -89,5 +99,154 @@ export const HowItWork = [
     backgroundUrl: "./src/assets/benefits/card-3.svg",
     iconUrl: howItWorks3,
     imageUrl: howItWorks3,
+  },
+];
+
+const serviceCards = [
+  {
+    id: "0",
+    title: "Food Delivery",
+    text: "Get your favorite meals delivered by drone in minutes. Enjoy hot and fresh food at your doorstep.",
+    backgroundUrl: "./src/assets/benefits/card-1.svg",
+    iconUrl: benefitIcon1,
+    imageUrl: benefitImage2,
+  },
+  {
+    id: "1",
+    title: "Package Delivery",
+    text: "Fast and secure delivery of your packages. Safe and reliable service for all your shipping needs.",
+    backgroundUrl: "./src/assets/benefits/card-2.svg",
+    iconUrl: benefitIcon2,
+    imageUrl: benefitImage2,
+    light: true,
+  },
+  {
+    id: "2",
+    title: "Medical Supplies Delivery",
+    text: "Quick delivery of essential medical supplies. Ensure timely access to critical healthcare items.",
+    backgroundUrl: "./src/assets/benefits/card-3.svg",
+    iconUrl: benefitIcon3,
+    imageUrl: benefitImage2,
+  },
+  {
+    id: "3",
+    title: "Custom Deliveries",
+    text: "Tailored delivery solutions for your unique needs. Contact us for specialized delivery requests.",
+    backgroundUrl: "./src/assets/benefits/card-4.svg",
+    iconUrl: benefitIcon4,
+    imageUrl: benefitImage2,
+    light: true,
+  },
+  {
+    id: "4",
+    title: "Grocery Delivery",
+    text: "Get your daily essentials delivered right to your door. Fresh produce and groceries in no time.",
+    backgroundUrl: "./src/assets/benefits/card-5.svg",
+    iconUrl: benefitIcon1,
+    imageUrl: benefitImage2,
+  },
+  {
+    id: "5",
+    title: "Document Delivery",
+    text: "Secure and swift delivery of important documents. Perfect for business and personal needs.",
+    backgroundUrl: "./src/assets/benefits/card-6.svg",
+    iconUrl: benefitIcon2,
+    imageUrl: benefitImage2,
+  },
+];
+
+export default serviceCards;
+
+
+export const whyChooseUs = [
+  {
+    id: "0",
+    title: "Safety and Security",
+    text: "Our drones are equipped with the latest safety features and secure handling mechanisms to ensure your items are delivered safely.",
+
+    backgroundUrl: "./src/assets/benefits/card-1.svg",
+    iconUrl: benefitIcon1,
+    imageUrl: benefitImage2,
+  },
+  {
+    id: "1",
+    title: "Affordable Prices",
+    text: "We offer competitive pricing for all our delivery services, ensuring you get the best value for your money.",
+
+    backgroundUrl: "./src/assets/benefits/card-2.svg",
+    iconUrl: benefitIcon2,
+    imageUrl: benefitImage2,
+    light: true,
+  },
+  {
+    id: "2",
+    title: "Top-Rated Service",
+    text: "Our customers love us! We pride ourselves on delivering top-notch service that keeps our clients coming back.",
+    backgroundUrl: "./src/assets/benefits/card-3.svg",
+    iconUrl: benefitIcon3,
+    imageUrl: benefitImage2,
+  },
+];
+
+export const testimonials = [
+  {
+    quote:
+      "The drone delivery service is incredibly fast and reliable. I'm very impressed!",
+    name: "John Doe",
+    title: "Satisfied Customer",
+    image: "src/assets/profile pic/user1.jpg",
+  },
+  {
+    quote: "I received my package in perfect condition. Great service!",
+    name: "Jane Smith",
+    title: "Happy Client",
+    image: "src/assets/profile pic/user2.jpg",
+  },
+  {
+    quote:
+      "The drone delivery service is incredibly fast and reliable. I'm very impressed!",
+    name: "John Doe",
+    title: "Satisfied Customer",
+    image: "src/assets/profile pic/user3.jpg",
+  },
+  {
+    quote: "I received my package in perfect condition. Great service!",
+    name: "Robert Jaden",
+    title: "Happy Client",
+    image: "src/assets/profile pic/user4.jpg",
+  },
+];
+
+
+export const socials = [
+  {
+    id: "0",
+    title: "Discord",
+    iconUrl: discordBlack,
+    url: "#",
+  },
+  {
+    id: "1",
+    title: "Twitter",
+    iconUrl: twitter,
+    url: "#",
+  },
+  {
+    id: "2",
+    title: "Instagram",
+    iconUrl: instagram,
+    url: "#",
+  },
+  {
+    id: "3",
+    title: "Telegram",
+    iconUrl: telegram,
+    url: "#",
+  },
+  {
+    id: "4",
+    title: "Facebook",
+    iconUrl: facebook,
+    url: "#",
   },
 ];

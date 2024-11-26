@@ -16,30 +16,20 @@ const Hero = () => {
     >
       <div className="container relative" ref={parallaxRef}>
         <div className="relative z-1 mx-auto mb-[3.875rem] max-w-[62rem] text-center md:mb-20 lg:mb-[6.25rem]">
-          <h1 className="h1 mb-6">
-            <span className="bg-gradient-to-r from-color-5 to-color-1 bg-clip-text text-transparent">
-              {" "}
-              <ReactTyped
-                strings={["fast", "reliable", "secure"]}
-                typeSpeed={100}
-                backSpeed={120}
-                loop
-              />
-            </span>
-            <br />
+          <h1 className="h2 mb-6">
             Get your deliveries by our&nbsp;drones&nbsp;
             {/* This is trial - Tewodrosy*/}
             Get Best delivery experiance in your backyard.
-            <span className="relative inline-block">
+            {/* <span className="relative inline-block">
               DDS{" "}
-              {/* <img
+              <img
                 src={curve}
                 alt="Curve"
                 className="absolute left-0 top-full w-full xl:-mt-2"
                 width={624}
                 height={28}
-              /> */}
-            </span>
+              />
+            </span> */}
           </h1>
           {/* <p className="body-1 mx-auto mb-6 max-w-3xl text-n-2 lg:mb-8">
             something that i am writing to make sure this part has something to

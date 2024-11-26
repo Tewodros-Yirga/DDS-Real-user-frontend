@@ -5,7 +5,7 @@ import Section from "../../design/Section";
 const HowItWorks = () => {
   return (
     <Section
-      className="z-1 h-full py-[10.5rem]"
+      className="z-1 h-full py-[1.5rem]"
       crosses
       crossesOffset="lg:translate-y-[5.25rem]"
       customPaddings="md:px-[3rem] sm:px-[1rem] px-[0.5rem]"
