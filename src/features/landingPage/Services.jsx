@@ -1,12 +1,12 @@
 import Section from "../../design/Section";
 import WrappedHeading from "./WrappedHeading";
 import serviceCards from "../../constants";
-import Arrow from '../../assets/svg/Arrow'
-import {GradientLight} from '../../design/Benefits'
-import ClipPath from '../../assets/svg/ClipPath'
+import Arrow from "../../assets/svg/Arrow";
+import { GradientLight } from "../../design/Benefits";
+import ClipPath from "../../assets/svg/ClipPath";
 import Benefits2 from "./Benefits2";
 import HowItWorks from "./HowitWorks";
-import Testimonials from './Testimonials'
+import Testimonials from "./Testimonials";
 import Faq from "./Faq";
 
 const Services = () => {
@@ -20,7 +20,7 @@ const Services = () => {
         <div className="mb-10 flex flex-wrap gap-9">
           {serviceCards.map((item) => (
             <div
-              className="relative block bg-[length:100%_100%] bg-no-repeat p-0.5 md:max-w-[24rem]"
+              className="relative block bg-[length:100%_100%] bg-no-repeat p-0.5 duration-300 hover:scale-105 md:max-w-[24rem]"
               style={{
                 backgroundImage: `url(${item.backgroundUrl})`,
               }}
