@@ -106,7 +106,7 @@ const New_account = ({ onClose, switchToSignIn }) => {
                 Confirm Password
               </label>
             </div>
-            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:scale-105 hover:text-color-1">
+            <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-300 hover:scale-105 hover:text-color-1">
               Register
             </Button>
             <div className="my-6 text-center text-sm font-medium text-white">
