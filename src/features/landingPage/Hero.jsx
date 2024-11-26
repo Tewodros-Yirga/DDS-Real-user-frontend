@@ -1,14 +1,9 @@
 import Section from "../../design/Section";
 import { ReactTyped } from "react-typed";
-//import { curve, heroBackground, robot } from "../assets";
 import Button from "../../design/Button";
 import { BackgroundCircles, BottomLine, Gradient } from "../../design/Hero";
-//import { heroIcons } from "../constants";
 import { ScrollParallax } from "react-just-parallax";
 import { useRef } from "react";
-//import Generating from "./Generating";
-//import Notification from "./Notification";
-//import CompanyLogos from "./CompanyLogos";
 const Hero = () => {
   const parallaxRef = useRef(null);
   return (
@@ -46,12 +41,12 @@ const Hero = () => {
               /> */}
             </span>
           </h1>
-          <p className="body-1 mx-auto mb-6 max-w-3xl text-n-2 lg:mb-8">
+          {/* <p className="body-1 mx-auto mb-6 max-w-3xl text-n-2 lg:mb-8">
             something that i am writing to make sure this part has something to
             read. just for practice
-          </p>
-          <Button href="/pricing" white>
-            Get Started
+          </p> */}
+          <Button href="/order-placement" white>
+            Order Now
           </Button>
         </div>
         <div className="relative mx-auto max-w-[23rem] md:max-w-5xl xl:mb-24">

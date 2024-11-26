@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
-import { brainwave } from "../assets/index.js";
+import { logo } from "../assets/index.js";
 import { navigation } from "../constants/index.js";
 import Button from "../design/Button.jsx";
 import MenuSvg from "../assets/svg/MenuSvg.jsx";
@@ -63,7 +63,7 @@ const DashHeader = () => {
       >
         <div className="flex items-center px-5 max-lg:py-4 lg:px-7.5 xl:px-10">
           <a className="block w-[12rem] xl:mr-8" href="/">
-            <img src={brainwave} width={190} height={40} alt="Brainwave" />
+            <img src={logo} width={190} height={40} alt="DDS" />
           </a>
 
           <nav

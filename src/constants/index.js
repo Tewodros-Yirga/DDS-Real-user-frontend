@@ -1,3 +1,5 @@
+import { howItWorks1, howItWorks2, howItWorks3 } from "../assets";
+
 export const navigation = [
   {
     id: "0",
@@ -57,5 +59,35 @@ export const DeliveryZones = [
     id: "3",
     place: "Gondar",
     coordinates: [12.611953256451066, 37.469898650532684],
+  },
+];
+
+export const HowItWork = [
+  {
+    id: "1",
+    title: "Order",
+    text: "Place your order through our app or website. Choose from a variety of services and products.",
+
+    backgroundUrl: "./src/assets/how it works/card-1.svg",
+    iconUrl: howItWorks1,
+    imageUrl: howItWorks1,
+  },
+  {
+    id: "2",
+    title: "Prepare",
+    text: "Our team prepares your order and ensures everything is ready for delivery.",
+
+    backgroundUrl: "./src/assets/benefits/card-2.svg",
+    iconUrl: howItWorks2,
+    imageUrl: howItWorks2,
+    light: true,
+  },
+  {
+    id: "3",
+    title: "Deliver",
+    text: "Our drones deliver your order quickly and safely to your doorstep.",
+    backgroundUrl: "./src/assets/benefits/card-3.svg",
+    iconUrl: howItWorks3,
+    imageUrl: howItWorks3,
   },
 ];
