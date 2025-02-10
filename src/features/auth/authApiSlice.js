@@ -9,7 +9,18 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: { ...credentials },
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log("Login Response:", data);
+          const { user, accessToken } = data; // Ensure backend returns user details
+          dispatch(setCredentials({ user, accessToken }));
+        } catch (err) {
+          console.error("Login failed:", err);
+        }
+      },
     }),
+
     sendLogout: builder.mutation({
       query: () => ({
         url: "/auth/logout",
@@ -17,17 +28,17 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          console.log(data);
+          await queryFulfilled;
           dispatch(logOut());
           setTimeout(() => {
             dispatch(apiSlice.util.resetApiState());
           }, 1000);
         } catch (err) {
-          console.log(err);
+          console.error("Logout failed:", err);
         }
       },
     }),
+
     refresh: builder.mutation({
       query: () => ({
         url: "/auth/refresh",
@@ -36,11 +47,11 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log(data);
-          const { accessToken } = data;
-          dispatch(setCredentials({ accessToken }));
+          console.log("Refresh Response:", data);
+          const { user, accessToken } = data; // Update user details on token refresh
+          dispatch(setCredentials({ user, accessToken }));
         } catch (err) {
-          console.log(err);
+          console.error("Token refresh failed:", err);
         }
       },
     }),

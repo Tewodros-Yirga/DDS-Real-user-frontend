@@ -40,11 +40,11 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { accessToken } = await login({ username, password }).unwrap();
-      dispatch(setCredentials({ accessToken }));
+      const userData = await login({ username, password }).unwrap();
+      dispatch(setCredentials(userData)); // Store the full user object
       setUsername("");
       setPassword("");
-      navigate("/dash");
+      onClose(); // Close modal after successful login
     } catch (err) {
       if (!err.status) {
         setErrMsg("No Server Response");
