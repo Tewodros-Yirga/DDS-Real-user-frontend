@@ -5,14 +5,24 @@ import { navigation } from "../constants/index.js";
 import Button from "../design/Button.jsx";
 import MenuSvg from "../assets/svg/MenuSvg.jsx";
 import { HamburgerMenu } from "../design/Header.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import New_account from "../features/forms/New_account.jsx";
 import SignIn from "../features/forms/SignIn.jsx";
 
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../features/auth/authSlice";
+import { useSendLogoutMutation } from "../features/auth/authApiSlice.js";
+
 Modal.setAppElement("#root");
 
 const DashHeader = () => {
+  const currentUser = useSelector(selectCurrentUser);
+  if (currentUser) {
+    console.log("User is logged in:", currentUser);
+  } else {
+    console.log("User is not logged in");
+  }
   const [modalState, setModalState] = useState({
     isShown: false,
     type: "new-account",
@@ -52,6 +62,16 @@ const DashHeader = () => {
 
     enablePageScroll();
     setOpenNavigation(false);
+  };
+
+  const [sendLogout] = useSendLogoutMutation();
+
+  const logoutUser = async () => {
+    try {
+      await sendLogout().unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   return (
@@ -94,17 +114,22 @@ const DashHeader = () => {
 
             <HamburgerMenu />
           </nav>
-
-          <a
-            onClick={() => openModal("new-account")}
-            href="#signup"
-            className="button mr-8 hidden text-n-1 transition-colors hover:text-color-1 lg:block"
-          >
-            New account
-          </a>
-          <div onClick={() => openModal("signin")}>
+          {currentUser ? (
+            <span className="mr-8 hidden text-n-1 lg:block">
+              {currentUser.username}
+            </span>
+          ) : (
+            <a
+              onClick={() => openModal("new-account")}
+              href="#signup"
+              className="button mr-8 hidden text-n-1 transition-colors hover:text-color-1 lg:block"
+            >
+              New account
+            </a>
+          )}
+          <div onClick={currentUser ? logoutUser : () => openModal("signin")}>
             <Button className="hidden lg:flex" href="#login">
-              Sign in
+              {currentUser ? "Sign Out" : "Sign in"}
             </Button>
           </div>
           <Button
