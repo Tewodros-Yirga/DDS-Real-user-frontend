@@ -1,4 +1,3 @@
-import { useEffect,useState } from "react";
 import { useLocation } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { logo } from "../assets/index.js";
@@ -74,6 +73,36 @@ const DashHeader = () => {
       console.error("Logout failed:", err);
     }
   };
+  
+  // Function to scroll to a section
+  const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Detect the current section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      let currentSection = "";
+      navigation.forEach((item) => {
+        const section = document.getElementById(item.url);
+        if (section) {
+          const { top, bottom } = section.getBoundingClientRect();
+          if (top <= window.innerHeight / 2 && bottom >= window.innerHeight / 2) {
+            currentSection = item.url;
+          }
+        }
+      });
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+
 
   return (
     <>
