@@ -1,4 +1,4 @@
-import Section from "../../design/Section";
+import Section from "../../design/section";
 import Heading from "../../design/Heading";
 import { useEffect, useState } from "react";
 import DeliveryZonesMap from "../../design/DeliveryZoneMap";

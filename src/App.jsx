@@ -7,6 +7,9 @@ import OrderHistory from "./features/orders/OrderHistory";
 import OrderTracking from "./features/orders/OrderTracking";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import { LandingPage } from "./features/landingPage/LandingPage";
+import { useNavigate } from "react-router-dom";
+import OrderingMap from "./features/orders/OrderingMap";
+import DroneTrackingMap from "./features/orders/DroneTrackingMap";
 
 function App() {
   return (
@@ -15,13 +18,12 @@ function App() {
         {/* Public Route */}
         <Route path="/" element={<DashLayout />}>
           <Route index element={<LandingPage />} />
-
           {/* Authenticated Routes */}
           <Route path="order-placement" element={<OrderPlacement />} />
           <Route path="contact-us" element={<ContactUs />} />
           <Route path="edit-profile" element={<EditProfile />} />
           <Route path="order-history" element={<OrderHistory />} />
-          <Route path="order-tracking" element={<OrderTracking />} />
+          {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
         </Route>
       </Routes>
       <ButtonGradient />
@@ -30,5 +32,3 @@ function App() {
 }
 
 export default App;
-
-// git branching  

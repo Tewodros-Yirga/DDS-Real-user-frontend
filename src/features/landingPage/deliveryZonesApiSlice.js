@@ -9,7 +9,7 @@ const initialState = deliveryZonesAdapter.getInitialState();
 export const deliveryZonesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDeliveryZones: builder.query({
-      query: () => "/deliveryzones", // Replace with your backend endpoint
+      query: () => "/deliveryzones",
       validateStatus: (response, result) => {
         return response.status === 200 && !result.isError;
       },
