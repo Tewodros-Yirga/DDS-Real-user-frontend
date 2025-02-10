@@ -38,7 +38,7 @@ const DeliveryZonesMap = ({
       : { lat: 9.035837172515716, lng: 38.752291674100675 }; // fallback center
 
   return (
-    <div className="relative rounded-lg">
+    <div className="relative rounded-lg"  id="DeliveryMap">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 opacity-75">
           Loading...

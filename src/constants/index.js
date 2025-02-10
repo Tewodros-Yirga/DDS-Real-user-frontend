@@ -19,36 +19,37 @@ export const navigation = [
   {
     id: "0",
     title: "Home",
-    url: "/",
+    url: "hero", // Match the section ID in Hero.jsx
   },
   {
     id: "1",
     title: "Delivery Zones",
-    url: "/delivery zones",
+    url: "DeliveryMap", // Match the section ID in DeliveryZone.jsx
   },
   {
     id: "2",
     title: "Services",
-    url: "/services",
+    url: "services", // Ensure Services section has ID "services"
   },
   {
     id: "3",
     title: "Contact Us",
-    url: "/contact",
+    url: "contact", // Ensure Contact Us section has ID "contact"
   },
   {
     id: "4",
-    title: "New account",
-    url: "#signup",
-    onlyMobile: true,
+    title: "New Account",
+    url: "new-account",
+    onlyMobile:true,
   },
   {
     id: "5",
-    title: "Sign in",
-    url: "#login",
-    onlyMobile: true,
+    title: "Sign In",
+    url: "signin",
+    onlyMobile:true, 
   },
 ];
+
 export const DeliveryZones = [
   {
     id: "0",

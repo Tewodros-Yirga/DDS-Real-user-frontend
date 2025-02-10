@@ -1,3 +1,4 @@
+import { useEffect,useState } from "react";
 import { useLocation } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { logo } from "../assets/index.js";
@@ -5,7 +6,6 @@ import { navigation } from "../constants/index.js";
 import Button from "../design/Button.jsx";
 import MenuSvg from "../assets/svg/MenuSvg.jsx";
 import { HamburgerMenu } from "../design/Header.jsx";
-import { useState } from "react";
 import Modal from "react-modal";
 import New_account from "../features/forms/New_account.jsx";
 import SignIn from "../features/forms/SignIn.jsx";
@@ -36,6 +36,7 @@ const DashHeader = () => {
 
   const { pathname } = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -49,10 +50,38 @@ const DashHeader = () => {
 
   const handleClick = () => {
     if (!openNavigation) return;
-
     enablePageScroll();
     setOpenNavigation(false);
   };
+
+  // Function to scroll to a section
+  const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Detect the current section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      let currentSection = "";
+      navigation.forEach((item) => {
+        const section = document.getElementById(item.url);
+        if (section) {
+          const { top, bottom } = section.getBoundingClientRect();
+          if (top <= window.innerHeight / 2 && bottom >= window.innerHeight / 2) {
+            currentSection = item.url;
+          }
+        }
+      });
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
 
   return (
     <>
@@ -75,17 +104,20 @@ const DashHeader = () => {
               {navigation.map((item) => (
                 <a
                   key={item.id}
-                  href={item.url}
-                  onClick={
-                    handleClick && item.title === "new-account"
-                      ? () => openModal("new-account")
-                      : item.title === "signin"
-                        ? () => openModal("signin")
-                        : null
-                  }
+                  href={`#${item.url}`} // Change to section ID
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (item.title === "New Account") {
+                      openModal("new-account");
+                    } else if (item.title === "Sign In") {
+                      openModal("signin");
+                    } else {
+                      scrollToSection(item.url); // Scroll to section instead of routing
+                    }
+                  }}
                   className={`relative block px-6 py-6 font-code text-2xl uppercase transition-colors md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 xl:px-12 ${
-                    pathname === item.url ? "text-color-1" : "text-n-1"
-                  } ${item.onlyMobile ? "lg:hidden" : ""}`}
+                    activeSection === item.url ? "text-color-1" : "text-n-1"
+                  } ${item.onlyMobile ? "lg:hidden" : ""} hover:text-color-1`}
                 >
                   {item.title}
                 </a>
@@ -116,6 +148,7 @@ const DashHeader = () => {
           </Button>
         </div>
       </div>
+
       <Modal
         isOpen={modalState.isShown}
         onRequestClose={closeModal}

@@ -6,7 +6,7 @@ import ClipPath from "../../assets/svg/ClipPath";
 const Benefits2 = () => {
   return (
     <>
-      <div className="container relative z-2">
+      <div className="container relative z-2" >
         <Heading className="md:max-w-md lg:max-w-2xl" title="Why Choose Us" />
         <div className="mb-10 flex flex-wrap gap-9">
           {whyChooseUs.map((item) => (

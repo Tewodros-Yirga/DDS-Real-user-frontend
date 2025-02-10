@@ -11,7 +11,7 @@ import Faq from "./Faq";
 
 const Services = () => {
   return (
-    <Section>
+    <Section id="services">
       <div className="container relative z-2 mt-0 pt-0">
         <WrappedHeading
           className="md:max-w-md lg:max-w-2xl"

@@ -20,7 +20,7 @@ const ContactUs = () => {
   };
 
   return (
-    <Section>
+    <Section id="contact">
       <Heading className="heading" title="Contact us" />
       <div className="container mx-auto w-[50%] rounded-xl bg-black p-4 text-white">
         <form onSubmit={handleSubmit} className="space-y-4">
