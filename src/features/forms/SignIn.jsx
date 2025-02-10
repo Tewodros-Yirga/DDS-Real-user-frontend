@@ -1,15 +1,71 @@
-import React, { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { FiMail } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import Button from "../../design/Button";
 import { FaLockOpen } from "react-icons/fa6";
 
+import { useRef, useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+import { setCredentials } from "../auth/authSlice";
+import { useLoginMutation } from "../auth/authApiSlice";
+
 const SignIn = ({ onClose, switchToNewAccount }) => {
   const [isShowPassword, setIsShowedPassword] = useState(false);
+
   const toggleShowPassword = () => {
     setIsShowedPassword((prev) => !prev);
   };
+
+  const userRef = useRef();
+  const errRef = useRef();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errMsg, setErrMsg] = useState("");
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
+
+  useEffect(() => {
+    userRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    setErrMsg("");
+  }, [username, password]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { accessToken } = await login({ username, password }).unwrap();
+      dispatch(setCredentials({ accessToken }));
+      setUsername("");
+      setPassword("");
+      navigate("/dash");
+    } catch (err) {
+      if (!err.status) {
+        setErrMsg("No Server Response");
+      } else if (err.status === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg(err.data?.message);
+      }
+      errRef.current.focus();
+    }
+  };
+
+  const handleUserInput = (e) => setUsername(e.target.value);
+  const handlePwdInput = (e) => setPassword(e.target.value);
+
+  const errClass = errMsg ? "errmsg" : "offscreen";
+
+  if (isLoading) return <p>Loading...</p>;
+
   return (
     <>
       <div>
@@ -18,19 +74,29 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
         </span>
         <div className="w-full p-10">
           <h2 className="text-center text-2xl text-white">Login</h2>
-          <form action="" method="post" autoComplete="off">
+          <p ref={errRef} className={errClass} aria-live="assertive">
+            {errMsg}
+          </p>
+          <form
+            action=""
+            method="post"
+            autoComplete="off"
+            onSubmit={handleSubmit}
+          >
             <div className="relative my-8 h-12 w-full border-b-2 border-white">
               <span className="absolute right-2 text-xl leading-[57px] text-white">
                 <FiMail size={30} />
               </span>
               <input
-                type="email"
-                name="ema"
+                type="text"
+                ref={userRef}
+                value={username}
+                onChange={handleUserInput}
                 required
                 className="peer h-full w-full border-none bg-transparent p-2 font-semibold text-white outline-none"
               />
               <label className="absolute left-1 top-1/2 -translate-y-1/2 transform font-medium text-white transition-all duration-500 peer-valid:top-[-5px] peer-focus:top-[-5px]">
-                Email
+                Username
               </label>
             </div>
 
@@ -53,8 +119,8 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
               <input
                 type={isShowPassword ? "text" : "password"}
                 required
-                name="pass"
-                id="pass"
+                onChange={handlePwdInput}
+                value={password}
                 className="peer h-full w-full border-none bg-transparent p-2 font-semibold text-white outline-none"
               />
               <label className="absolute left-1 top-1/2 -translate-y-1/2 transform font-medium text-white transition-all duration-500 peer-valid:top-[-5px] peer-focus:top-[-5px]">
