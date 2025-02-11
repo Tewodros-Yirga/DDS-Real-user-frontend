@@ -12,6 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.3.0",
     "antd": "^5.23.4",
+    "framer-motion": "^12.4.2",
     "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -25,7 +26,8 @@
     "react-typed": "^2.0.12",
     "recharts": "^2.15.1",
     "scroll-lock": "^2.1.5",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "vite-plugin-svgr": "^4.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
