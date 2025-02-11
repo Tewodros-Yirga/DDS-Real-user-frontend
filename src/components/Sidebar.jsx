@@ -40,28 +40,28 @@ const Sidebar = () => {
         {/* Sidebar Content */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
           <SidebarSection title="Main">
-            <SidebarLink to="/" icon={<FaHome />} label="Dashboard" />
-            <SidebarLink to="/analytics" icon={<FaChartBar />} label="Analytics" />
+            <SidebarLink to="/admin/dash" icon={<FaHome />} label="Dashboard" />
+            <SidebarLink to="/admin/analytics" icon={<FaChartBar />} label="Analytics" />
           </SidebarSection>
 
           <SidebarSection title="Data">
-            <SidebarLink to="/users" icon={<FaUsers />} label="Manage Users" />
-            <SidebarLink to="/orders" icon={<FaBoxOpen />} label="Manage Orders" />
-            <SidebarLink to="/pilots" icon={<FaUsers />} label="Manage Pilots" />
-            <SidebarLink to="/quadcopters" icon={<FaBoxOpen />} label="Manage Quadcopters" />
+            <SidebarLink to="/admin/users" icon={<FaUsers />} label="Manage Users" />
+            <SidebarLink to="/admin/orders" icon={<FaBoxOpen />} label="Manage Orders" />
+            <SidebarLink to="/admin/pilots" icon={<FaUsers />} label="Manage Pilots" />
+            <SidebarLink to="/admin/quadcopters" icon={<FaBoxOpen />} label="Manage Quadcopters" />
           </SidebarSection>
 
           <SidebarSection title="Pages">
-            <SidebarLink to="/profile" icon={<FaTable />} label="Profile Form" />
-            <SidebarLink to="/calendar" icon={<FaRegCalendarAlt />} label="Calendar" />
-            <SidebarLink to="/faq" icon={<FaQuestionCircle />} label="FAQ Page" />
+            <SidebarLink to="/admin/profile" icon={<FaTable />} label="Profile Form" />
+            <SidebarLink to="/admin/calendar" icon={<FaRegCalendarAlt />} label="Calendar" />
+            <SidebarLink to="/admin/faq" icon={<FaQuestionCircle />} label="FAQ Page" />
           </SidebarSection>
 
           <SidebarSection title="Charts">
-            <SidebarLink to="/bar-chart" icon={<FaChartBar />} label="Bar Chart" />
-            <SidebarLink to="/pie-chart" icon={<FaChartPie />} label="Pie Chart" />
-            <SidebarLink to="/line-chart" icon={<FaChartBar />} label="Line Chart" />
-            <SidebarLink to="/geo-chart" icon={<FaChartBar />} label="Geography Chart" />
+            <SidebarLink to="/admin/bar-chart" icon={<FaChartBar />} label="Bar Chart" />
+            <SidebarLink to="/admin/pie-chart" icon={<FaChartPie />} label="Pie Chart" />
+            <SidebarLink to="/admin/line-chart" icon={<FaChartBar />} label="Line Chart" />
+            <SidebarLink to="/admin/geo-chart" icon={<FaChartBar />} label="Geography Chart" />
           </SidebarSection>
         </nav>
 

@@ -26,7 +26,10 @@ const COLORS = ["#3498db", "#2ecc71", "#f1c40f", "#e74c3c"];
 
 const Analytics = () => {
   return (
-    <div className="p-6 bg-gray-50 custom-scrollbar dashboard-container">
+    <div
+      className="p-6 bg-gray-50 custom-scrollbar dashboard-container"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+    >
       <Row gutter={[16, 16]}>
         {/* Top Two Charts */}
         <Col xs={24} lg={12}>

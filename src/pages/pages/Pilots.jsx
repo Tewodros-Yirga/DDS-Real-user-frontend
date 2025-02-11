@@ -145,65 +145,67 @@ const Pilots = () => {
       status: "Active",
     },
   ];
-  
 
   return (
-    <div className="p-4 bg-gray-100">
-    <Card
-      title={<h2 className="text-lg font-bold text-gray-800">Pilots</h2>}
-      extra={<Button type="primary">Add Pilot</Button>}
-      className="shadow-sm border"
+    <div
+      className="p-4 bg-gray-100"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
     >
-      {screens.md ? (
-        // Render Table for Medium and Larger Screens
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey="key"
-          pagination={{
-            pageSize: 5,
-            showQuickJumper: true,
-          }}
-          bordered
-        />
-      ) : (
-        // Render Card Layout for Small Screens
-        <div className="space-y-4">
-          {data.map((item) => (
-            <Card
-              key={item.key}
-              bordered
-              className="bg-white shadow-sm rounded-lg"
-            >
-              <p>
-                <strong>Name:</strong> {item.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {item.email}
-              </p>
-              <p>
-                <strong>License:</strong> {item.license}
-              </p>
-              <p>
-                <strong>Flight Hours:</strong> {item.hours}
-              </p>
-              <p>
-                <strong>Status:</strong> {item.status}
-              </p>
-              <div className="flex space-x-2 mt-2">
-                <Button type="primary" ghost>
-                  Edit
-                </Button>
-                <Button type="text" danger>
-                  Delete
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-    </Card>
-  </div>
+      <Card
+        title={<h2 className="text-lg font-bold text-gray-800">Pilots</h2>}
+        extra={<Button type="primary">Add Pilot</Button>}
+        className="shadow-sm border"
+      >
+        {screens.md ? (
+          // Render Table for Medium and Larger Screens
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey="key"
+            pagination={{
+              pageSize: 5,
+              showQuickJumper: true,
+            }}
+            bordered
+          />
+        ) : (
+          // Render Card Layout for Small Screens
+          <div className="space-y-4">
+            {data.map((item) => (
+              <Card
+                key={item.key}
+                bordered
+                className="bg-white shadow-sm rounded-lg"
+              >
+                <p>
+                  <strong>Name:</strong> {item.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {item.email}
+                </p>
+                <p>
+                  <strong>License:</strong> {item.license}
+                </p>
+                <p>
+                  <strong>Flight Hours:</strong> {item.hours}
+                </p>
+                <p>
+                  <strong>Status:</strong> {item.status}
+                </p>
+                <div className="flex space-x-2 mt-2">
+                  <Button type="primary" ghost>
+                    Edit
+                  </Button>
+                  <Button type="text" danger>
+                    Delete
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 };
 

@@ -79,7 +79,6 @@ const Users = () => {
       role: "User",
     },
   ];
-  
 
   const columns = [
     {
@@ -114,7 +113,10 @@ const Users = () => {
   ];
 
   return (
-    <div className="p-4 bg-gray-100">
+    <div
+      className="p-4 bg-gray-100"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+    >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Users</h2>}
         extra={<Button type="primary">Add User</Button>}

@@ -147,10 +147,12 @@ const Orders = () => {
       status: "Cancelled",
     },
   ];
-  
 
   return (
-    <div className="p-4 bg-gray-100">
+    <div
+      className="p-4 bg-gray-100"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+    >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Orders</h2>}
         className="shadow-sm border"

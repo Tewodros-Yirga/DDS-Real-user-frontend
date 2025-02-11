@@ -20,7 +20,10 @@ const data = [
 
 const Dashboard = () => {
   return (
-    <div className="p-6 bg-gray-50 custom-scrollbar dashboard-container">
+    <div
+      className="p-6 bg-gray-50 custom-scrollbar dashboard-container"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+    >
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-bold text-gray-800">Dashboard</h1>
