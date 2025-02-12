@@ -13,15 +13,15 @@ import DroneTrackingMap from "./features/orders/DroneTrackingMap";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/main/Dashboard";
 import Analytics from "./pages/main/Analytics";
-import Orders from './pages/pages/Orders';
-import Pilots from './pages/pages/Pilots';
-import Quadcopters from './pages/pages/Quadcopters';
-import Users from './pages/pages/Users';
-import BarChartPage from './pages/charts/BarChartPage';
-import GeoChartPage from './pages/charts/GeoChartPage';
-import LineChartPage from './pages/charts/LineChartPage';
-import PieChartPage from './pages/charts/PieChartPage';
-
+import Orders from "./pages/pages/Orders";
+import Pilots from "./pages/pages/Pilots";
+import Quadcopters from "./pages/pages/Quadcopters";
+import Users from "./pages/pages/Users";
+import BarChartPage from "./pages/charts/BarChartPage";
+import GeoChartPage from "./pages/charts/GeoChartPage";
+import LineChartPage from "./pages/charts/LineChartPage";
+import PieChartPage from "./pages/charts/PieChartPage";
+import Prefetch from "./features/auth/prefetch";
 
 const AdminLayout = () => {
   return (
@@ -51,14 +51,15 @@ function App() {
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<DashLayout />}>
-          <Route index element={<LandingPage />} />
-          {/* Authenticated Routes */}
-          <Route path="order-placement" element={<OrderPlacement />} />
-          <Route path="contact-us" element={<ContactUs />} />
-          <Route path="edit-profile" element={<EditProfile />} />
-          <Route path="order-history" element={<OrderHistory />} />
-          {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
-
+          <Route element={<Prefetch />}>
+            <Route index element={<LandingPage />} />
+            {/* Authenticated Routes */}
+            <Route path="order-placement" element={<OrderPlacement />} />
+            <Route path="contact-us" element={<ContactUs />} />
+            <Route path="edit-profile" element={<EditProfile />} />
+            <Route path="order-history" element={<OrderHistory />} />
+            {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
+          </Route>
           {/* Admin routes */}
 
           <Route path="/admin/*" element={<AdminLayout />} />
