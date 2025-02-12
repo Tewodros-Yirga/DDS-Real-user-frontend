@@ -1,9 +1,88 @@
 import React from "react";
-import { Table, Card, Button, Space, Tag, Grid } from "antd";
+import {
+  Table,
+  Card,
+  Button,
+  Space,
+  Tag,
+  Grid,
+  Popover,
+  Dropdown,
+  Menu,
+} from "antd";
+import { useGetAllOrdersQuery } from "../../features/orders/orderApiSlice";
+import {
+  selectDeliveryZoneById,
+  useGetDeliveryZonesQuery,
+} from "../../features/landingPage/deliveryZonesApiSlice";
+import { useSelector } from "react-redux";
+
+const { useBreakpoint } = Grid;
 
 const Orders = () => {
-  const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+
+  // Fetch orders
+  const {
+    data: ordersData,
+    isLoading: isOrderLoading,
+    isError: isOrdersError,
+    error: ordersError,
+  } = useGetAllOrdersQuery({
+    status: "", // Add filters if needed
+    customer: "",
+    pilot: "",
+    page: 1,
+    limit: 10,
+  });
+
+  // Fetch delivery zones
+  const {
+    data: deliveryZones,
+    isLoading: isDeliveryZonesLoading,
+    isError: isDeliveryZonesError,
+    error: deliveryZonesError,
+  } = useGetDeliveryZonesQuery();
+
+  // Use useSelector at the top level to get the normalized delivery zones data
+  const deliveryZoneMap = useSelector((state) => {
+    const zones = {};
+    if (deliveryZones?.ids) {
+      deliveryZones.ids.forEach((id) => {
+        const zone = selectDeliveryZoneById(state, id);
+        if (zone) {
+          zones[id] = zone.zoneName;
+        }
+      });
+    }
+    return zones;
+  });
+
+  // Handle loading and error states
+  if (isOrderLoading || isDeliveryZonesLoading) return <div>Loading...</div>;
+  if (isOrdersError) return <div>Error: {ordersError.message}</div>;
+  if (isDeliveryZonesError)
+    return <div>Error: {deliveryZonesError.message}</div>;
+
+  // Transform the fetched data to match the table structure
+  const data = ordersData?.docs?.map((order) => ({
+    key: order._id,
+    orderId: order.orderNumber,
+    customerName: order.customer.username,
+    date: new Date(order.deliveryDate).toLocaleDateString(),
+    amount: order.totalAmount,
+    status: order.status,
+    deliveryZone: deliveryZoneMap[order.deliveryZone] || "N/A", // Use the delivery zone name
+    items: order.items,
+    deliveryDate: new Date(order.deliveryDate).toLocaleDateString(),
+    completed: order.completed ? "Yes" : "No",
+    deliveryAddress: order.deliveryAddress,
+    rescheduledDate: order.rescheduledDate,
+    cancellationReason: order.cancellationReason,
+    refundPercentage: order.refundPercentage,
+    pilot: order.pilot,
+    quadcopter: order.quadcopter,
+  }));
 
   const columns = [
     {
@@ -17,145 +96,104 @@ const Orders = () => {
       key: "customerName",
     },
     {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
+      title: "Delivery Zone",
+      dataIndex: "deliveryZone",
+      key: "deliveryZone",
     },
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (amount) => `$${amount.toFixed(2)}`,
+      title: "Items",
+      dataIndex: "items",
+      key: "items",
+      render: (items) => (
+        <Dropdown
+          overlay={
+            <Menu>
+              {items.map((item, index) => (
+                <Menu.Item key={index}>
+                  {item.product} (Qty: {item.quantity}, Price: ${item.price})
+                </Menu.Item>
+              ))}
+            </Menu>
+          }
+        >
+          <Button type="link">View Items</Button>
+        </Dropdown>
+      ),
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={status === "Delivered" ? "green" : "blue"}>{status}</Tag>
+        <Tag color={status === "Completed" ? "green" : "blue"}>{status}</Tag>
       ),
+    },
+    {
+      title: "Delivery Date",
+      dataIndex: "deliveryDate",
+      key: "deliveryDate",
+    },
+    {
+      title: "Completed",
+      dataIndex: "completed",
+      key: "completed",
     },
     {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Button type="link">View</Button>
-          <Button type="link" danger>
-            Cancel
-          </Button>
+          <Popover
+            title="Order Details"
+            content={
+              <div>
+                <p>
+                  <strong>Delivery Address:</strong>{" "}
+                  {record.deliveryAddress?.coordinates
+                    ? `Lat: ${record.deliveryAddress.coordinates[0]}, Lng: ${record.deliveryAddress.coordinates[1]}`
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Rescheduled Date:</strong>{" "}
+                  {record.rescheduledDate
+                    ? new Date(record.rescheduledDate).toLocaleDateString()
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Cancellation Reason:</strong>{" "}
+                  {record.cancellationReason || "N/A"}
+                </p>
+                <p>
+                  <strong>Refund Percentage:</strong>{" "}
+                  {record.refundPercentage
+                    ? `${record.refundPercentage}%`
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Pilot:</strong> {record.pilot?.username || "N/A"}
+                </p>
+                <p>
+                  <strong>Quadcopter:</strong>{" "}
+                  {record.quadcopter?.name || "N/A"}
+                </p>
+              </div>
+            }
+          >
+            <Button type="link">View</Button>
+          </Popover>
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      orderId: "ORD12345",
-      customerName: "John Doe",
-      date: "2024-12-06",
-      amount: 150.5,
-      status: "Delivered",
-    },
-    {
-      key: "2",
-      orderId: "ORD12346",
-      customerName: "Jane Smith",
-      date: "2024-12-05",
-      amount: 85.3,
-      status: "In Transit",
-    },
-    {
-      key: "3",
-      orderId: "ORD12347",
-      customerName: "Alex Johnson",
-      date: "2024-12-04",
-      amount: 120.75,
-      status: "Pending",
-    },
-    {
-      key: "4",
-      orderId: "ORD12348",
-      customerName: "Emma Brown",
-      date: "2024-12-03",
-      amount: 45.99,
-      status: "Delivered",
-    },
-    {
-      key: "5",
-      orderId: "ORD12349",
-      customerName: "William Davis",
-      date: "2024-12-02",
-      amount: 230.0,
-      status: "Cancelled",
-    },
-    {
-      key: "6",
-      orderId: "ORD12350",
-      customerName: "Sophia Miller",
-      date: "2024-12-01",
-      amount: 198.4,
-      status: "In Transit",
-    },
-    {
-      key: "7",
-      orderId: "ORD12351",
-      customerName: "James Wilson",
-      date: "2024-11-30",
-      amount: 95.8,
-      status: "Delivered",
-    },
-    {
-      key: "8",
-      orderId: "ORD12352",
-      customerName: "Ava Garcia",
-      date: "2024-11-29",
-      amount: 60.25,
-      status: "Pending",
-    },
-    {
-      key: "9",
-      orderId: "ORD12353",
-      customerName: "Mason Taylor",
-      date: "2024-11-28",
-      amount: 110.99,
-      status: "Delivered",
-    },
-    {
-      key: "10",
-      orderId: "ORD12354",
-      customerName: "Isabella Martinez",
-      date: "2024-11-27",
-      amount: 75.6,
-      status: "In Transit",
-    },
-    {
-      key: "11",
-      orderId: "ORD12355",
-      customerName: "Ethan Harris",
-      date: "2024-11-26",
-      amount: 180.9,
-      status: "Delivered",
-    },
-    {
-      key: "12",
-      orderId: "ORD12356",
-      customerName: "Olivia Clark",
-      date: "2024-11-25",
-      amount: 220.7,
-      status: "Cancelled",
-    },
-  ];
-
   return (
     <div
-      className="p-4 bg-gray-100"
-      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+      className="bg-gray-100 p-4"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
     >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Orders</h2>}
-        className="shadow-sm border"
+        className="border shadow-sm"
       >
         {screens.md ? (
           // Render Table for Medium and Larger Screens
@@ -176,7 +214,7 @@ const Orders = () => {
               <Card
                 key={item.key}
                 bordered
-                className="bg-white shadow-sm rounded-lg"
+                className="rounded-lg bg-white shadow-sm"
               >
                 <p>
                   <strong>Order Id:</strong> {item.orderId}
@@ -185,19 +223,76 @@ const Orders = () => {
                   <strong>Customer:</strong> {item.customerName}
                 </p>
                 <p>
-                  <strong>Date:</strong> {item.date}
+                  <strong>Delivery Zone:</strong> {item.deliveryZone}
                 </p>
                 <p>
-                  <strong>Amount:</strong> {item.amount}
+                  <strong>Items:</strong>{" "}
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        {item.items.map((item, index) => (
+                          <Menu.Item key={index}>
+                            {item.product} (Qty: {item.quantity}, Price: $
+                            {item.price})
+                          </Menu.Item>
+                        ))}
+                      </Menu>
+                    }
+                  >
+                    <Button type="link">View Items</Button>
+                  </Dropdown>
                 </p>
                 <p>
                   <strong>Status:</strong> {item.status}
                 </p>
+                <p>
+                  <strong>Delivery Date:</strong> {item.deliveryDate}
+                </p>
+                <p>
+                  <strong>Completed:</strong> {item.completed}
+                </p>
                 <div className="flex space-x-2">
-                  <Button type="link">View</Button>
-                  <Button type="link" danger>
-                    Cancel
-                  </Button>
+                  <Popover
+                    title="Order Details"
+                    content={
+                      <div>
+                        <p>
+                          <strong>Delivery Address:</strong>{" "}
+                          {item.deliveryAddress?.coordinates
+                            ? `Lat: ${item.deliveryAddress.coordinates[0]}, Lng: ${item.deliveryAddress.coordinates[1]}`
+                            : "N/A"}
+                        </p>
+                        <p>
+                          <strong>Rescheduled Date:</strong>{" "}
+                          {item.rescheduledDate
+                            ? new Date(
+                                item.rescheduledDate,
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </p>
+                        <p>
+                          <strong>Cancellation Reason:</strong>{" "}
+                          {item.cancellationReason || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Refund Percentage:</strong>{" "}
+                          {item.refundPercentage
+                            ? `${item.refundPercentage}%`
+                            : "N/A"}
+                        </p>
+                        <p>
+                          <strong>Pilot:</strong>{" "}
+                          {item.pilot?.username || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Quadcopter:</strong>{" "}
+                          {item.quadcopter?.name || "N/A"}
+                        </p>
+                      </div>
+                    }
+                  >
+                    <Button type="link">View</Button>
+                  </Popover>
                 </div>
               </Card>
             ))}
