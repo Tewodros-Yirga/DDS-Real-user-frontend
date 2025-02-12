@@ -1,12 +1,130 @@
-import React from "react";
-import { Table, Card, Button, Space, Tag, Grid, Spin, Alert } from "antd";
-import { useGetQuadcoptersQuery } from "../quadcopter/quadcopter"; // Update the import path
+import React, { useState } from "react";
+import { Table, Card, Button, Space, Tag, Grid, Spin, Alert, Modal } from "antd";
+import { useGetQuadcoptersQuery } from "../quadcopter/quadcopter"; // Adjust the import path
+import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice"; // Adjust the import path
+import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
+
+// QuadcopterForm component for adding a new quadcopter
+const QuadcopterForm = ({ onCloseModal }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    deliveryZone: "",
+    pilot: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  // Fetch delivery zones
+  const { data: deliveryZones, isLoading: isLoadingZones } = useGetDeliveryZonesQuery();
+
+  // Fetch pilots
+  const { data: users, isLoading: isLoadingPilots } = useGetUsersQuery();
+  const selectedDeliveryZone = formData.deliveryZone;
+
+  // Filter pilots based on role and delivery zone
+  const pilots = users?.filter(
+    (user) => user.role === "pilot" && user.deliveryZone === selectedDeliveryZone
+  );
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    if (!formData.name) newErrors.name = "Please enter the quadcopter name";
+    if (!formData.deliveryZone) newErrors.deliveryZone = "Please select a delivery zone";
+    if (!formData.pilot) newErrors.pilot = "Please select a pilot";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    // Submit the form data (e.g., send to API)
+    console.log("Form Data:", formData);
+    onCloseModal(); // Close the modal after submission
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Quadcopter Name</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Delivery Zone</label>
+        <select
+          name="deliveryZone"
+          value={formData.deliveryZone}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        >
+          <option value="">Select Delivery Zone</option>
+          {isLoadingZones ? (
+            <option>Loading...</option>
+          ) : (
+            deliveryZones?.map((zone) => (
+              <option key={zone.id} value={zone.id}>
+                {zone.name}
+              </option>
+            ))
+          )}
+        </select>
+        {errors.deliveryZone && <p className="text-red-500 text-sm">{errors.deliveryZone}</p>}
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Pilot</label>
+        <select
+          name="pilot"
+          value={formData.pilot}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        >
+          <option value="">Select Pilot</option>
+          {isLoadingPilots ? (
+            <option>Loading...</option>
+          ) : (
+            pilots?.map((pilot) => (
+              <option key={pilot.id} value={pilot.id}>
+                {pilot.name}
+              </option>
+            ))
+          )}
+        </select>
+        {errors.pilot && <p className="text-red-500 text-sm">{errors.pilot}</p>}
+      </div>
+
+      <button
+        type="submit"
+        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Add Quadcopter
+      </button>
+    </form>
+  );
+};
+
 
 const Quadcopters = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch data using the API slice
+  // Fetch quadcopters data using the API slice
   const {
     data: quadcopters,
     isLoading,
@@ -14,7 +132,15 @@ const Quadcopters = () => {
     error,
   } = useGetQuadcoptersQuery();
 
-  // Define table columns
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // Define table columns for quadcopters
   const columns = [
     {
       title: "Quadcopter Name",
@@ -50,10 +176,10 @@ const Quadcopters = () => {
       render: (deliveryZoneName) => deliveryZoneName || "Unassigned", // Show "Unassigned" if no zone
     },
     {
-      title: "created at",
+      title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (createdAt) => createdAt || "Unassigned", // Show "Unassigned" if no zone
+      render: (createdAt) => createdAt || "Unassigned", // Show "Unassigned" if no date
     },
     {
       title: "Actions",
@@ -115,7 +241,7 @@ const Quadcopters = () => {
     >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Quadcopters</h2>}
-        extra={<Button type="primary">Add Quadcopter</Button>}
+        extra={<Button type="primary" onClick={handleOpenModal}>Add Quadcopter</Button>}
         className="border shadow-sm"
       >
         {screens.md ? (
@@ -156,10 +282,10 @@ const Quadcopters = () => {
                   {item.deliveryZoneName || "Unassigned"}
                 </p>
                 <p>
-                  <strong>Created at:</strong> {item.createdAt || "Unassigned"}
+                  <strong>Created At:</strong> {item.createdAt || "Unassigned"}
                 </p>
                 <p>
-                  <strong>status:</strong> {item.status || "Unassigned"}
+                  <strong>Status:</strong> {item.status || "Unassigned"}
                 </p>
                 <div className="mt-2 flex space-x-2">
                   <Button type="primary" ghost>
@@ -174,8 +300,17 @@ const Quadcopters = () => {
           </div>
         )}
       </Card>
+      <Modal
+        title="Add Quadcopter"
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={null}
+      >
+        <QuadcopterForm onCloseModal={handleCloseModal} />
+      </Modal>
     </div>
   );
 };
 
 export default Quadcopters;
+
