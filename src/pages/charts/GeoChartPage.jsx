@@ -4,10 +4,12 @@ import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 // The URL or path to the GeoJSON file (example for world map)
 const geoUrl = "https://raw.githubusercontent.com/d3/d3-geo/master/test/data/world-110m2.json";
 
-
 const GeoChartPage = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div
+      className="bg-white p-6 rounded-lg shadow-md"
+      style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} // Add this style
+    >
       <h2 className="text-2xl font-semibold mb-4">Geography Chart - Delivery Areas</h2>
       <ComposableMap>
         <Geographies geography={geoUrl}>
