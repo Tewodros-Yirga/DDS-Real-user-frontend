@@ -1,11 +1,26 @@
 import React, { useState } from "react";
-import { Table, Card, Button, Space, Tag, Grid, Spin, Alert, Modal } from "antd";
-import { useGetQuadcoptersQuery } from "../quadcopter/quadcopter"; // Adjust the import path
+import {
+  Table,
+  Card,
+  Button,
+  Space,
+  Tag,
+  Grid,
+  Spin,
+  Alert,
+  Modal,
+} from "antd";
+import {
+  useAddQuadcopterMutation,
+  useGetQuadcoptersQuery,
+} from "../quadcopter/quadcopter"; // Adjust the import path
 import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice"; // Adjust the import path
 import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
 
 // QuadcopterForm component for adding a new quadcopter
 const QuadcopterForm = ({ onCloseModal }) => {
+  const [addQuadcopter, { isLoading, isSuccess, isError, error }] =
+    useAddQuadcopterMutation();
   const [formData, setFormData] = useState({
     name: "",
     deliveryZone: "",
@@ -15,28 +30,40 @@ const QuadcopterForm = ({ onCloseModal }) => {
   const [errors, setErrors] = useState({});
 
   // Fetch delivery zones
-  const { data: deliveryZones, isLoading: isLoadingZones } = useGetDeliveryZonesQuery();
+  const {
+    data: deliveryZones = [],
+    error: deliveryZoneError,
+    isLoadingZones,
+  } = useGetDeliveryZonesQuery();
+  const deliveryZonesArray =
+    deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
 
   // Fetch pilots
-  const { data: users, isLoading: isLoadingPilots } = useGetUsersQuery();
+  const { data: users = [], isLoading: isLoadingPilots } = useGetUsersQuery();
+  const usersArray = users?.ids?.map((id) => users.entities[id]) || [];
+  console.log(usersArray);
   const selectedDeliveryZone = formData.deliveryZone;
 
   // Filter pilots based on role and delivery zone
-  const pilots = users?.filter(
-    (user) => user.role === "pilot" && user.deliveryZone === selectedDeliveryZone
+  const pilots = usersArray?.filter(
+    (user) =>
+      user.roles.includes("Pilot") &&
+      user.deliveryZone === selectedDeliveryZone,
   );
+  //console.log(pilots);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     if (!formData.name) newErrors.name = "Please enter the quadcopter name";
-    if (!formData.deliveryZone) newErrors.deliveryZone = "Please select a delivery zone";
+    if (!formData.deliveryZone)
+      newErrors.deliveryZone = "Please select a delivery zone";
     if (!formData.pilot) newErrors.pilot = "Please select a pilot";
 
     if (Object.keys(newErrors).length > 0) {
@@ -45,13 +72,26 @@ const QuadcopterForm = ({ onCloseModal }) => {
     }
 
     setErrors({});
+
     // Submit the form data (e.g., send to API)
+    try {
+      await addQuadcopter({
+        name: formData.name,
+        deliveryZone: formData.deliveryZone,
+        pilot: formData.pilot,
+      });
+    } catch (err) {
+      console.error("Failed to register:", err);
+    }
     console.log("Form Data:", formData);
-    onCloseModal(); // Close the modal after submission
+    if (isSuccess) onCloseModal();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-lg border p-4 shadow"
+    >
       <div className="mb-4">
         <label className="block text-sm font-medium">Quadcopter Name</label>
         <input
@@ -59,40 +99,40 @@ const QuadcopterForm = ({ onCloseModal }) => {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+        {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
       </div>
-
       <div className="mb-4">
         <label className="block text-sm font-medium">Delivery Zone</label>
         <select
           name="deliveryZone"
           value={formData.deliveryZone}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         >
           <option value="">Select Delivery Zone</option>
           {isLoadingZones ? (
             <option>Loading...</option>
           ) : (
-            deliveryZones?.map((zone) => (
-              <option key={zone.id} value={zone.id}>
-                {zone.name}
+            deliveryZonesArray?.map((zone) => (
+              <option key={zone._id} value={zone._id}>
+                {zone.zoneName}
               </option>
             ))
           )}
         </select>
-        {errors.deliveryZone && <p className="text-red-500 text-sm">{errors.deliveryZone}</p>}
+        {errors.deliveryZonesArray && (
+          <p className="text-sm text-red-500">{errors.deliveryZonesArray}</p>
+        )}
       </div>
-
       <div className="mb-4">
         <label className="block text-sm font-medium">Pilot</label>
         <select
           name="pilot"
           value={formData.pilot}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         >
           <option value="">Select Pilot</option>
           {isLoadingPilots ? (
@@ -100,24 +140,27 @@ const QuadcopterForm = ({ onCloseModal }) => {
           ) : (
             pilots?.map((pilot) => (
               <option key={pilot.id} value={pilot.id}>
-                {pilot.name}
+                {pilot.username}
               </option>
             ))
           )}
         </select>
-        {errors.pilot && <p className="text-red-500 text-sm">{errors.pilot}</p>}
+        {errors.pilot && <p className="text-sm text-red-500">{errors.pilot}</p>}
       </div>
-
       <button
         type="submit"
-        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="w-full rounded bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
-        Add Quadcopter
+        {isLoading ? "Adding..." : "Add Quadcopter"}
       </button>
+      {isError && (
+        <p className="mt-2 text-sm text-red-500">
+          Error: {error?.data?.message}
+        </p>
+      )}
     </form>
   );
 };
-
 
 const Quadcopters = () => {
   const { useBreakpoint } = Grid;
@@ -241,7 +284,11 @@ const Quadcopters = () => {
     >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Quadcopters</h2>}
-        extra={<Button type="primary" onClick={handleOpenModal}>Add Quadcopter</Button>}
+        extra={
+          <Button type="primary" onClick={handleOpenModal}>
+            Add Quadcopter
+          </Button>
+        }
         className="border shadow-sm"
       >
         {screens.md ? (
@@ -313,4 +360,3 @@ const Quadcopters = () => {
 };
 
 export default Quadcopters;
-

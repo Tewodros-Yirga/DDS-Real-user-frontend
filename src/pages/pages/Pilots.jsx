@@ -1,15 +1,38 @@
 import React, { useState } from "react";
-import { Table, Card, Button, Space, Tag, Grid, Spin, Alert, Modal } from "antd";
-import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
+import {
+  Table,
+  Card,
+  Button,
+  Space,
+  Tag,
+  Grid,
+  Spin,
+  Alert,
+  Modal,
+} from "antd";
+import {
+  useGetUsersQuery,
+  useAddNewUserMutation,
+} from "../../features/users/usersApiSlice"; // Adjust the import path
+import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice";
 
 // PilotForm component for adding a new pilot
 const PilotForm = ({ onCloseModal }) => {
+  const [addNewUser, { isLoading, isSuccess, isError, error }] =
+    useAddNewUserMutation();
+  const { data: deliveryZones = [], error: deliveryZoneError } =
+    useGetDeliveryZonesQuery();
+  const deliveryZonesArray =
+    deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     phone: "",
     deliveryZone: "",
     assignedQuadcopters: [],
+    address: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -19,14 +42,17 @@ const PilotForm = ({ onCloseModal }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     if (!formData.username) newErrors.username = "Please enter a username";
+    if (!formData.password) newErrors.password = "Please enter a password";
     if (!formData.email) newErrors.email = "Please enter an email";
     if (!formData.phone) newErrors.phone = "Please enter a phone number";
-    if (!formData.deliveryZone) newErrors.deliveryZone = "Please select a delivery zone";
+    if (!formData.address) newErrors.address = "please enter an address";
+    if (!formData.deliveryZone)
+      newErrors.deliveryZone = "Please select a delivery zone";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -34,13 +60,29 @@ const PilotForm = ({ onCloseModal }) => {
     }
 
     setErrors({});
-    // Submit the form data (e.g., send to API)
+    try {
+      await addNewUser({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        roles: ["Pilot"],
+        deliveryZone: formData.deliveryZone,
+        address: formData.address,
+        createdBy: "6720ad60bb76da4ce78b78f4",
+      });
+    } catch (err) {
+      console.error("Failed to register:", err);
+    }
     console.log("Form Data:", formData);
-    onCloseModal(); // Close the modal after submission
+    if (isSuccess) onCloseModal();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-lg border p-4 shadow"
+    >
       <div className="mb-4">
         <label className="block text-sm font-medium">Username</label>
         <input
@@ -48,11 +90,25 @@ const PilotForm = ({ onCloseModal }) => {
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+        {errors.username && (
+          <p className="text-sm text-red-500">{errors.username}</p>
+        )}
       </div>
-
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Password</label>
+        <input
+          type="text"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full rounded border bg-white p-2"
+        />
+        {errors.phone && (
+          <p className="text-sm text-red-500">{errors.password}</p>
+        )}
+      </div>
       <div className="mb-4">
         <label className="block text-sm font-medium">Email</label>
         <input
@@ -60,11 +116,10 @@ const PilotForm = ({ onCloseModal }) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
       </div>
-
       <div className="mb-4">
         <label className="block text-sm font-medium">Phone</label>
         <input
@@ -72,29 +127,53 @@ const PilotForm = ({ onCloseModal }) => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
       </div>
-
       <div className="mb-4">
-        <label className="block text-sm font-medium">Delivery Zone</label>
+        <label className="block text-sm font-medium">Address</label>
         <input
           type="text"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          className="w-full rounded border bg-white p-2"
+        />
+        {errors.phone && (
+          <p className="text-sm text-red-500">{errors.address}</p>
+        )}
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium">Delivery Zone</label>
+        <select
           name="deliveryZone"
           value={formData.deliveryZone}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
-        {errors.deliveryZone && <p className="text-red-500 text-sm">{errors.deliveryZone}</p>}
+          className="w-full rounded border bg-white p-2"
+        >
+          <option value="">Select a Delivery Zone</option>
+          {deliveryZonesArray?.map((zone) => (
+            <option key={zone._id} value={zone._id}>
+              {zone.zoneName}
+            </option>
+          ))}
+        </select>
+        {errors.deliveryZoneArray && (
+          <p className="text-sm text-red-500">{errors.deliveryZoneArray}</p>
+        )}
       </div>
-
       <button
         type="submit"
-        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="w-full rounded bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
-        Add Pilot
+        {isLoading ? "Adding..." : "Add Pilot"}
       </button>
+      {isError && (
+        <p className="mt-2 text-sm text-red-500">
+          Error: {error?.data?.message}
+        </p>
+      )}
     </form>
   );
 };
@@ -105,12 +184,7 @@ const Pilots = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch pilots data using the API slice
-  const {
-    data: users,
-    isLoading,
-    isError,
-    error,
-  } = useGetUsersQuery();
+  const { data: users, isLoading, isError, error } = useGetUsersQuery();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -209,12 +283,18 @@ const Pilots = () => {
     >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Pilots</h2>}
-        extra={<Button type="primary" onClick={handleOpenModal}>Add Pilot</Button>}
+        extra={
+          <Button type="primary" onClick={handleOpenModal}>
+            Add Pilot
+          </Button>
+        }
         className="border shadow-sm"
       >
         {screens.md ? (
           // Render Table for Medium and Larger Screens
-          <div style={{ overflowX: "auto" }}> {/* Make table horizontally scrollable */}
+          <div style={{ overflowX: "auto" }}>
+            {" "}
+            {/* Make table horizontally scrollable */}
             <Table
               columns={columns}
               dataSource={tableData}
