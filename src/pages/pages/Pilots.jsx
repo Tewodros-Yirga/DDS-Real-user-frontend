@@ -13,6 +13,7 @@ import {
 import {
   useGetUsersQuery,
   useAddNewUserMutation,
+  useDeleteUserMutation,
 } from "../../features/users/usersApiSlice"; // Adjust the import path
 import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice";
 
@@ -184,7 +185,8 @@ const Pilots = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch pilots data using the API slice
-  const { data: users, isLoading, isError, error } = useGetUsersQuery();
+  const { data: users, isLoading, isError, error,refetch, } = useGetUsersQuery();
+   const [deleteUser] = useDeleteUserMutation();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -194,6 +196,37 @@ const Pilots = () => {
     setIsModalOpen(false);
   };
 
+
+  const handleDelete = (id) => {
+    // Find the user by ID
+    const userToDelete = users.entities[id];
+  
+    // Check if the user is a pilot
+    if (!userToDelete || !userToDelete.roles?.includes("Pilot")) {
+      console.error("User is not a pilot or does not exist");
+      return;
+    }
+  
+    Modal.confirm({
+      title: "Are you sure you want to delete this Pilot?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "No, cancel",
+      onOk: async () => {
+        try {
+          await deleteUser({ id }).unwrap();
+          refetch(); // Refetch the data to update the UI
+        } catch (err) {
+          console.error("Failed to delete a Pilot:", err);
+        }
+      },
+      onCancel: () => {
+        console.log("Deletion canceled");
+      },
+    });
+  };
+  
   // Define table columns for pilots
   const columns = [
     {
@@ -228,7 +261,7 @@ const Pilots = () => {
       render: (_, record) => (
         <Space size="middle">
           <Button type="link">Edit</Button>
-          <Button type="link" danger>
+          <Button type="link" danger onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
         </Space>
@@ -335,7 +368,7 @@ const Pilots = () => {
                   <Button type="primary" ghost>
                     Edit
                   </Button>
-                  <Button type="text" danger>
+                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
                     Delete
                   </Button>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Table, Card, Button, Space, Grid, Spin, Alert, Modal } from "antd";
-import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
+import { useGetUsersQuery,useDeleteUserMutation } from "../../features/users/usersApiSlice"; // Adjust the import path
 
 
 // CustomerForm component for adding a new customer
@@ -48,7 +48,7 @@ const CustomerForm = ({ onCloseModal }) => {
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border bg-white rounded"
         />
         {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
       </div>
@@ -60,7 +60,7 @@ const CustomerForm = ({ onCloseModal }) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border bg-white rounded"
         />
         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
@@ -72,7 +72,7 @@ const CustomerForm = ({ onCloseModal }) => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border bg-white rounded"
         />
         {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
       </div>
@@ -84,7 +84,7 @@ const CustomerForm = ({ onCloseModal }) => {
           name="address"
           value={formData.address}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border bg-white rounded"
         />
         {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
       </div>
@@ -111,7 +111,10 @@ const Users = () => {
     isLoading,
     isError,
     error,
+    refetch,
   } = useGetUsersQuery();
+
+  const [deleteUser] = useDeleteUserMutation();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -120,6 +123,29 @@ const Users = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+   // Handle delete action with confirmation
+    const handleDelete = (id) => {
+      Modal.confirm({
+        title: "Are you sure you want to delete this User?",
+        content: "This action cannot be undone.",
+        okText: "Yes, delete it",
+        okType: "danger",
+        cancelText: "No, cancel",
+        onOk: async () => {
+          try {
+            await deleteUser({id}).unwrap();
+            refetch(); // Refetch the quadcopters data to update the UI
+          } catch (err) {
+            console.error("Failed to delete a User:", err);
+          }
+        },
+        onCancel: () => {
+          console.log("Deletion canceled");
+        },
+      });
+    };
+
 
   // Define table columns for customers
   const columns = [
@@ -149,7 +175,7 @@ const Users = () => {
       render: (_, record) => (
         <Space size="middle">
           <Button type="link">Edit</Button>
-          <Button type="link" danger>
+          <Button type="link" danger onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
         </Space>
@@ -243,7 +269,7 @@ const customerUsers = users
                   <Button type="primary" ghost>
                     Edit
                   </Button>
-                  <Button type="text" danger>
+                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
                     Delete
                   </Button>
                 </div>

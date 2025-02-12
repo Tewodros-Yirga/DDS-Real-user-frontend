@@ -13,6 +13,7 @@ import {
 import {
   useAddQuadcopterMutation,
   useGetQuadcoptersQuery,
+  useDeleteQuadcopterMutation,
 } from "../quadcopter/quadcopter"; // Adjust the import path
 import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice"; // Adjust the import path
 import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
@@ -173,7 +174,10 @@ const Quadcopters = () => {
     isLoading,
     isError,
     error,
+    refetch, // Add refetch to update the UI after deletion
   } = useGetQuadcoptersQuery();
+
+  const [deleteQuadcopter] = useDeleteQuadcopterMutation();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -181,6 +185,28 @@ const Quadcopters = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  // Handle delete action with confirmation
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this quadcopter?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "No, cancel",
+      onOk: async () => {
+        try {
+          await deleteQuadcopter(id).unwrap();
+          refetch(); // Refetch the quadcopters data to update the UI
+        } catch (err) {
+          console.error("Failed to delete quadcopter:", err);
+        }
+      },
+      onCancel: () => {
+        console.log("Deletion canceled");
+      },
+    });
   };
 
   // Define table columns for quadcopters
@@ -230,7 +256,7 @@ const Quadcopters = () => {
       render: (_, record) => (
         <Space size="middle">
           <Button type="link">Edit</Button>
-          <Button type="link" danger>
+          <Button type="link" danger onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
         </Space>
@@ -338,7 +364,7 @@ const Quadcopters = () => {
                   <Button type="primary" ghost>
                     Edit
                   </Button>
-                  <Button type="text" danger>
+                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
                     Delete
                   </Button>
                 </div>
