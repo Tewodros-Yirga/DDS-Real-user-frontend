@@ -3,7 +3,6 @@ import DashLayout from "./components/DashLayout"; // Includes DashHeader and Das
 import OrderPlacement from "./features/orders/OrderPlacement";
 import ContactUs from "./features/ContactUs";
 import EditProfile from "./features/users/EditProfile";
-import OrderHistory from "./features/orders/OrderHistory";
 import OrderTracking from "./features/orders/OrderTracking";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import { LandingPage } from "./features/landingPage/LandingPage";
@@ -21,6 +20,7 @@ import BarChartPage from "./pages/charts/BarChartPage";
 import GeoChartPage from "./pages/charts/GeoChartPage";
 import LineChartPage from "./pages/charts/LineChartPage";
 import PieChartPage from "./pages/charts/PieChartPage";
+import History from './features/users/History';
 
 const AdminLayout = () => {
   return (
@@ -44,6 +44,19 @@ const AdminLayout = () => {
     </div>
   );
 };
+const PilotLayout = () => {
+  return (
+    <div className="flex h-screen bg-gray-100">
+       {/* <Sidebar /> */}
+      <div className="flex-1 p-6">
+        <Routes>
+          {/* <Route index element={<Dashboard />} /> */}
+         <Route path="trackdrone" element={<DroneTrackingMap />} />
+        </Routes>
+      </div>
+      </div>
+  );
+};
 
 function App() {
   return (
@@ -56,12 +69,19 @@ function App() {
           <Route path="order-placement" element={<OrderPlacement />} />
           <Route path="contact-us" element={<ContactUs />} />
           <Route path="edit-profile" element={<EditProfile />} />
-          <Route path="order-history" element={<OrderHistory />} />
+          
+          <Route path="history" element={<History />} />
+
+          {/* <Route path="order-history" element={<OrderHistory />} /> */}
           {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
 
           {/* Admin routes */}
 
           <Route path="/admin/*" element={<AdminLayout />} />
+
+
+          {/* Pilot routes */}
+          <Route path="/pilot/*" element={<PilotLayout />}/>
         </Route>
       </Routes>
       <ButtonGradient />

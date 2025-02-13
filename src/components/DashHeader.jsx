@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { logo } from "../assets/index.js";
 import { navigation } from "../constants/index.js";
@@ -9,7 +9,6 @@ import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import New_account from "../features/forms/New_account.jsx";
 import SignIn from "../features/forms/SignIn.jsx";
-
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../features/auth/authSlice";
 import { useSendLogoutMutation } from "../features/auth/authApiSlice.js";
@@ -18,11 +17,9 @@ Modal.setAppElement("#root");
 
 const DashHeader = () => {
   const currentUser = useSelector(selectCurrentUser);
-  if (currentUser) {
-    console.log("User is logged in:", currentUser);
-  } else {
-    console.log("User is not logged in");
-  }
+  const navigate = useNavigate();
+  const { pathname } = useLocation(); // Get the current route
+
   const [modalState, setModalState] = useState({
     isShown: false,
     type: "new-account",
@@ -44,7 +41,6 @@ const DashHeader = () => {
     setModalState({ isShown: true, type: "signin" });
   };
 
-  const { pathname } = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
@@ -73,12 +69,23 @@ const DashHeader = () => {
       console.error("Logout failed:", err);
     }
   };
-  
+
   // Function to scroll to a section
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Handle navigation link clicks
+  const handleNavigationClick = (item) => {
+    if (pathname === "/") {
+      // If on the root route, scroll to the section
+      scrollToSection(item.url);
+    } else {
+      // If on another route, navigate to the root route and then scroll to the section
+      navigate("/", { state: { scrollTo: item.url } });
     }
   };
 
@@ -90,7 +97,10 @@ const DashHeader = () => {
         const section = document.getElementById(item.url);
         if (section) {
           const { top, bottom } = section.getBoundingClientRect();
-          if (top <= window.innerHeight / 2 && bottom >= window.innerHeight / 2) {
+          if (
+            top <= window.innerHeight / 2 &&
+            bottom >= window.innerHeight / 2
+          ) {
             currentSection = item.url;
           }
         }
@@ -102,7 +112,13 @@ const DashHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
+  // Scroll to the section after navigating to the root route
+  useEffect(() => {
+    if (pathname === "/" && location.state?.scrollTo) {
+      const sectionId = location.state.scrollTo;
+      scrollToSection(sectionId);
+    }
+  }, [pathname, location.state]);
 
   return (
     <>
@@ -133,7 +149,7 @@ const DashHeader = () => {
                     } else if (item.title === "Sign In") {
                       openModal("signin");
                     } else {
-                      scrollToSection(item.url); // Scroll to section instead of routing
+                      handleNavigationClick(item); // Handle navigation link click
                     }
                   }}
                   className={`relative block px-6 py-6 font-code text-2xl uppercase transition-colors md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 xl:px-12 ${
@@ -143,6 +159,19 @@ const DashHeader = () => {
                   {item.title}
                 </a>
               ))}
+
+              {/* Render "History" only if currentUser exists */}
+              {currentUser && (
+                <a
+                  className="relative block px-6 py-6 font-code text-2xl uppercase transition-colors cursor-pointer hover:text-color-1 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold lg:leading-5 xl:px-12"
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent default behavior
+                    navigate("/history"); // Navigate to the history route
+                  }}
+                >
+                  History
+                </a>
+              )}
             </div>
 
             <HamburgerMenu />

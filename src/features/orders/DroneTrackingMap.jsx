@@ -33,20 +33,23 @@ const UpdateMapView = ({ center }) => {
 const DroneTrackingMap = () => {
   const [dronePosition, setDronePosition] = useState(null); // Current position
   const [dronePath, setDronePath] = useState([]); // History of positions
-  const [gpsInfo, setGpsInfo] = useState({ date: "", time: "" }); // Date and time from GPS data
+  const [gpsInfo, setGpsInfo] = useState({ time: "Unknown" }); // Date and time from GPS data
 
   useEffect(() => {
-    const socket = io("http://localhost:5000"); // Backend server address
+    const socket = io("http://localhost:4500"); // Backend server address
 
     // Listen for GPS data
     socket.on("gps-data", (data) => {
-      if (data.lat !== undefined && data.lng !== undefined) {
-        const newPosition = [data.lat, data.lng];
+      console.log("Received GPS data:", data);
+
+      if (data.latitude !== undefined && data.longitude !== undefined) {
+        const newPosition = [data.latitude, data.longitude];
+
         setDronePosition(newPosition);
         setDronePath((prevPath) => [...prevPath, newPosition]);
+
         setGpsInfo({
-          date: data.date || "Unknown",
-          time: data.time || "Unknown",
+          time: data.time || "Unknown", // Ensure time is not undefined
         });
       }
     });
