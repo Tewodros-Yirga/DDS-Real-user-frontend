@@ -21,6 +21,7 @@ import BarChartPage from "./pages/charts/BarChartPage";
 import GeoChartPage from "./pages/charts/GeoChartPage";
 import LineChartPage from "./pages/charts/LineChartPage";
 import PieChartPage from "./pages/charts/PieChartPage";
+import DeliveryZones from "./pages/pages/DeliveryZones";
 
 const AdminLayout = () => {
   return (
@@ -35,6 +36,7 @@ const AdminLayout = () => {
           <Route path="orders" element={<Orders />} />
           <Route path="pilots" element={<Pilots />} />
           <Route path="quadcopters" element={<Quadcopters />} />
+          <Route path="delivery-zones" element={<DeliveryZones />} />
           <Route path="bar-chart" element={<BarChartPage />} />
           <Route path="pie-chart" element={<PieChartPage />} />
           <Route path="line-chart" element={<LineChartPage />} />
