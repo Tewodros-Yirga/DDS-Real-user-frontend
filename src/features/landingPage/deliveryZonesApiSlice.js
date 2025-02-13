@@ -8,6 +8,7 @@ const initialState = deliveryZonesAdapter.getInitialState();
 
 export const deliveryZonesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Get all delivery zones
     getDeliveryZones: builder.query({
       query: () => "/deliveryzones",
       validateStatus: (response, result) => {
@@ -24,7 +25,6 @@ export const deliveryZonesApiSlice = apiSlice.injectEndpoints({
         });
         return deliveryZonesAdapter.setAll(initialState, loadedZones);
       },
-
       providesTags: (result, error, arg) => {
         if (result?.ids) {
           return [
@@ -34,10 +34,54 @@ export const deliveryZonesApiSlice = apiSlice.injectEndpoints({
         } else return [{ type: "DeliveryZone", id: "LIST" }];
       },
     }),
+
+    // Create a new delivery zone
+    createDeliveryZone: builder.mutation({
+      query: (deliveryZoneData) => ({
+        url: "/deliveryzones",
+        method: "POST",
+        body: {
+          ...deliveryZoneData,
+        },
+      }),
+      invalidatesTags: [{ type: "DeliveryZone", id: "LIST" }],
+    }),
+
+    // Update a delivery zone
+    updateDeliveryZone: builder.mutation({
+      query: (deliveryZoneData) => ({
+        url: `/deliveryzones}`,
+        method: "PATCH",
+        body: {
+          ...deliveryZoneData,
+        },
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "DeliveryZone", id: arg.id },
+      ],
+    }),
+
+    // Delete a delivery zone
+    deleteDeliveryZone: builder.mutation({
+      query: ({ id }) => ({
+        url: `/deliveryzones`, // Endpoint URL (no ID in the URL)
+        method: "DELETE",
+        body: { id }, // Send the ID in the request body
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "DeliveryZone", id: arg.id },
+      ],
+    }),
   }),
 });
 
-export const { useGetDeliveryZonesQuery } = deliveryZonesApiSlice;
+// Export hooks for usage in components
+export const {
+  useGetDeliveryZonesQuery,
+  useCreateDeliveryZoneMutation,
+  useUpdateDeliveryZoneMutation,
+  useDeleteDeliveryZoneMutation,
+} = deliveryZonesApiSlice;
 
 // Memoized selectors for accessing delivery zones data
 export const selectDeliveryZonesResult =
@@ -45,7 +89,7 @@ export const selectDeliveryZonesResult =
 
 const selectDeliveryZonesData = createSelector(
   selectDeliveryZonesResult,
-  (deliveryZonesResult) => deliveryZonesResult.data ?? initialState, // Normalize data
+  (deliveryZonesResult) => deliveryZonesResult.data ?? initialState,
 );
 
 export const {
