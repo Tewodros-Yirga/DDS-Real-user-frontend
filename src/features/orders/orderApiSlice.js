@@ -1,8 +1,8 @@
-// features/orders/orderApiSlice.js
 import { apiSlice } from "../../app/api/apiSlice";
 
-export const orderApiSlice = apiSlice.injectEndpoints({
+export const ordersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Get all orders
     getAllOrders: builder.query({
       query: ({ status, customer, pilot, page = 1, limit = 10 }) => {
         const queryParams = new URLSearchParams({
@@ -23,29 +23,41 @@ export const orderApiSlice = apiSlice.injectEndpoints({
           : ["Order"],
     }),
 
+    // Create a new order
     createOrder: builder.mutation({
-      query: (newOrder) => ({
+      query: (orderData) => ({
         url: "/orders",
         method: "POST",
-        body: newOrder,
+        body: orderData,
       }),
       invalidatesTags: ["Order"],
     }),
 
+    // Reschedule an order
     rescheduleOrder: builder.mutation({
       query: ({ id, rescheduledDate }) => ({
-        url: `/orders/${id}/reschedule`,
+        url: `/orders/reschedule/${id}`,
         method: "PATCH",
         body: { rescheduledDate },
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Order", id }],
     }),
 
+    // Cancel an order
     cancelOrder: builder.mutation({
       query: ({ id, reason, userId }) => ({
-        url: `/orders/${id}`,
-        method: "DELETE",
+        url: `/orders/cancel/${id}`,
+        method: "PATCH",
         body: { reason, userId },
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Order", id }],
+    }),
+
+    // Complete an order
+    completeOrder: builder.mutation({
+      query: (id) => ({
+        url: `/orders/complete/${id}`,
+        method: "PATCH",
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Order", id }],
     }),
@@ -57,4 +69,5 @@ export const {
   useCreateOrderMutation,
   useRescheduleOrderMutation,
   useCancelOrderMutation,
-} = orderApiSlice;
+  useCompleteOrderMutation,
+} = ordersApiSlice;
