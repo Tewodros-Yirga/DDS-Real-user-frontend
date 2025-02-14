@@ -21,7 +21,12 @@ import GeoChartPage from "./pages/charts/GeoChartPage";
 import LineChartPage from "./pages/charts/LineChartPage";
 import PieChartPage from "./pages/charts/PieChartPage";
 import DeliveryZones from "./pages/pages/DeliveryZones";
-import History from './features/users/History';
+import History from "./features/users/History";
+import PilotSidebar from "./components/PilotSidebar";
+import PilotDashboard from './pilot/PilotDashboard';
+import PilotOrders from './pilot/PilotOrders';
+import Quadcopter from './pilot/Quadcopter';
+import Fly from './pilot/Fly';
 
 const AdminLayout = () => {
   return (
@@ -49,14 +54,18 @@ const AdminLayout = () => {
 const PilotLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100">
-       {/* <Sidebar /> */}
+      <PilotSidebar />
       <div className="flex-1 p-6">
         <Routes>
-          {/* <Route index element={<Dashboard />} /> */}
-         <Route path="trackdrone" element={<DroneTrackingMap />} />
+          <Route index element={<PilotDashboard />} />
+          <Route path="dashboard" element={<PilotDashboard />} />
+          <Route path="orders" element={<PilotOrders />} />
+          <Route path="quadcopter" element={<Quadcopter />} />
+          <Route path="fly" element={<Fly />} />
+          <Route path="trackdrone" element={<DroneTrackingMap />} />
         </Routes>
       </div>
-      </div>
+    </div>
   );
 };
 
@@ -71,7 +80,7 @@ function App() {
           <Route path="order-placement" element={<OrderPlacement />} />
           <Route path="contact-us" element={<ContactUs />} />
           <Route path="edit-profile" element={<EditProfile />} />
-          
+
           <Route path="history" element={<History />} />
 
           {/* <Route path="order-history" element={<OrderHistory />} /> */}
@@ -81,9 +90,8 @@ function App() {
 
           <Route path="/admin/*" element={<AdminLayout />} />
 
-
           {/* Pilot routes */}
-          <Route path="/pilot/*" element={<PilotLayout />}/>
+          <Route path="/pilot/*" element={<PilotLayout />} />
         </Route>
       </Routes>
       <ButtonGradient />

@@ -7,6 +7,7 @@ import DroneLoader from "./DroneLoader";
 const DashLayout = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isPilotRoute = location.pathname.startsWith("/pilot");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,11 +25,20 @@ const DashLayout = () => {
 
   return (
     <>
-      {!isAdminRoute && <DashHeader />}
-      <div className={`overflow-hidden ${!isAdminRoute ? "pt-[4.75rem] lg:pt-[5.25rem]" : ""}`}>
+      {/* Show DashHeader only for non-admin and non-pilot routes */}
+      {!isAdminRoute && !isPilotRoute && <DashHeader />}
+
+      {/* Main Content */}
+      <div
+        className={`overflow-hidden ${
+          !isAdminRoute && !isPilotRoute ? "pt-[4.75rem] lg:pt-[5.25rem]" : ""
+        }`}
+      >
         <Outlet />
       </div>
-      {!isAdminRoute && <DashFooter />}
+
+      {/* Show DashFooter only for non-admin and non-pilot routes */}
+      {!isAdminRoute && !isPilotRoute && <DashFooter />}
     </>
   );
 };
