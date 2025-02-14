@@ -56,9 +56,9 @@ const MapClickHandler = ({ setPosition, activeField }) => {
       const { lat, lng } = e.latlng;
 
       if (activeField === "pickup") {
-        setPosition((prev) => ({ ...prev, pickup: [lat, lng] }));
+        setPosition((prev) => ({ ...prev, pickup: { lat, lng } }));
       } else if (activeField === "dropoff") {
-        setPosition((prev) => ({ ...prev, dropoff: [lat, lng] }));
+        setPosition((prev) => ({ ...prev, dropoff: { lat, lng } }));
       }
     },
   });
@@ -80,7 +80,10 @@ const OrderingMap = ({ onSubmit }) => {
 
   useEffect(() => {
     if (positions.pickup && positions.dropoff) {
-      const dist = calculateDistance(positions.pickup, positions.dropoff);
+      const dist = calculateDistance(
+        [positions.pickup.lat, positions.pickup.lng],
+        [positions.dropoff.lat, positions.dropoff.lng],
+      );
       setDistance(dist.toFixed(2)); // Distance in kilometers, rounded to 2 decimal places
     }
   }, [positions]);
@@ -101,7 +104,7 @@ const OrderingMap = ({ onSubmit }) => {
               readOnly
               value={
                 positions.pickup
-                  ? `Latitude: ${positions.pickup[0]}, Longitude: ${positions.pickup[1]}`
+                  ? `Latitude: ${positions.pickup.lat}, Longitude: ${positions.pickup.lng}`
                   : "Click on the map to select"
               }
               onFocus={() => setActiveField("pickup")}
@@ -123,7 +126,7 @@ const OrderingMap = ({ onSubmit }) => {
               readOnly
               value={
                 positions.dropoff
-                  ? `Latitude: ${positions.dropoff[0]}, Longitude: ${positions.dropoff[1]}`
+                  ? `Latitude: ${positions.dropoff.lat}, Longitude: ${positions.dropoff.lng}`
                   : "Click on the map to select"
               }
               onFocus={() => setActiveField("dropoff")}
@@ -172,19 +175,22 @@ const OrderingMap = ({ onSubmit }) => {
 
           {/* Markers */}
           {positions.pickup && (
-            <Marker position={positions.pickup}>
+            <Marker position={[positions.pickup.lat, positions.pickup.lng]}>
               <Popup>Pickup Location</Popup>
             </Marker>
           )}
           {positions.dropoff && (
-            <Marker position={positions.dropoff}>
+            <Marker position={[positions.dropoff.lat, positions.dropoff.lng]}>
               <Popup>Drop-Off Location</Popup>
             </Marker>
           )}
           {/* Line between Pickup and Drop-Off */}
           {positions.pickup && positions.dropoff && (
             <Polyline
-              positions={[positions.pickup, positions.dropoff]}
+              positions={[
+                [positions.pickup.lat, positions.pickup.lng],
+                [positions.dropoff.lat, positions.dropoff.lng],
+              ]}
               color="blue"
             >
               <Popup>Distance: {distance} km</Popup>
@@ -192,8 +198,11 @@ const OrderingMap = ({ onSubmit }) => {
           )}
           <MapEffect
             center={
-              positions?.dropoff ||
-              positions?.pickup || [9.035837172515716, 38.752291674100675]
+              positions?.dropoff
+                ? [positions.dropoff.lat, positions.dropoff.lng]
+                : positions?.pickup
+                  ? [positions.pickup.lat, positions.pickup.lng]
+                  : [9.035837172515716, 38.752291674100675]
             }
           />
           <MapClickHandler

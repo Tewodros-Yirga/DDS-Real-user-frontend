@@ -2,20 +2,52 @@ import React, { useState, useEffect } from "react";
 import Section from "../../design/section";
 import { useNavigate } from "react-router-dom";
 import OrderingMap from "./OrderingMap";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../auth/authSlice";
+import { useCreateOrderMutation } from "../orders/orderApiSlice";
+import { useGetDeliveryZonesQuery } from "../landingPage/deliveryZonesApiSlice";
+
+// Utility function to calculate distance between two points (Haversine formula)
+const calculateDistance = ([lat1, lon1], [lat2, lon2]) => {
+  const R = 6371; // Radius of Earth in kilometers
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in kilometers
+};
 
 const OrderPlacement = () => {
+  const currentUser = useSelector(selectCurrentUser);
+  const [createOrder, { isLoading }] = useCreateOrderMutation();
+  const {
+    data: deliveryZones,
+    isLoading: isZonesLoading,
+    isError: isZonesError,
+    error: zonesError,
+  } = useGetDeliveryZonesQuery();
   const [formData, setFormData] = useState({
-    customer: "", // Manually input for now, replace with dynamic user ID after authentication
-    items: [{ name: "", quantity: 1, price: 0 }],
+    items: [{ product: "", quantity: 1, price: 0 }],
     totalAmount: 0,
-    pickupAddress: { coordinates: [0, 0] },
-    dropoffAddress: { coordinates: [0, 0] },
+    pickupAddress: { type: "Point", coordinates: [0, 0] },
+    dropoffAddress: { type: "Point", coordinates: [0, 0] },
     deliveryDate: "",
     paymentStatus: "Paid",
+    deliveryZone: "",
   });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [backendResponse, setBackendResponse] = useState(null); // New state for backend response
 
   const navigate = useNavigate();
 
@@ -27,6 +59,65 @@ const OrderPlacement = () => {
     );
     setFormData((prev) => ({ ...prev, totalAmount: total }));
   }, [formData.items]);
+
+  // Automatically determine delivery zone when pickup or drop-off location changes
+  useEffect(() => {
+    if (
+      formData.pickupAddress.coordinates[0] !== 0 &&
+      formData.pickupAddress.coordinates[1] !== 0 &&
+      deliveryZones
+    ) {
+      console.log("Pickup Coordinates:", formData.pickupAddress.coordinates);
+      console.log("Delivery Zones:", deliveryZones);
+
+      const deliveryZonesArray = Object.values(deliveryZones.entities); // Extract zones
+      const pickupZone = determineDeliveryZone(
+        formData.pickupAddress.coordinates,
+        deliveryZonesArray,
+      );
+      const dropoffZone = determineDeliveryZone(
+        formData.dropoffAddress.coordinates,
+        deliveryZonesArray,
+      );
+
+      // Assign the pickup zone if available, otherwise assign the dropoff zone
+      if (pickupZone) {
+        setFormData((prev) => ({ ...prev, deliveryZone: pickupZone._id }));
+      } else if (dropoffZone) {
+        setFormData((prev) => ({ ...prev, deliveryZone: dropoffZone._id }));
+      } else {
+        setFormData((prev) => ({ ...prev, deliveryZone: "" }));
+      }
+    }
+  }, [formData.pickupAddress, formData.dropoffAddress, deliveryZones]);
+
+  // Utility function to determine the delivery zone for a given location
+  const determineDeliveryZone = (coordinates, zones = []) => {
+    if (!coordinates || !Array.isArray(coordinates)) {
+      console.error("Invalid coordinates:", coordinates);
+      return null;
+    }
+
+    for (const zone of zones) {
+      if (!zone?.coordinates || typeof zone.coordinates !== "object") {
+        console.error("Invalid zone coordinates:", zone.coordinates);
+        continue;
+      }
+
+      // Convert zone coordinates object to array [lng, lat]
+      const [zoneLng, zoneLat] = [zone.coordinates.lng, zone.coordinates.lat];
+
+      // Convert pickup/dropoff coordinates to array [lng, lat]
+      const [lng, lat] = coordinates;
+
+      const distance = calculateDistance([lat, lng], [zoneLat, zoneLng]);
+      if (distance <= zone.radius / 1000) {
+        // Convert radius to kilometers
+        return zone;
+      }
+    }
+    return null; // No matching zone found
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,19 +135,19 @@ const OrderPlacement = () => {
   const addItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { name: "", quantity: 1, price: 0 }],
+      items: [...formData.items, { product: "", quantity: 1, price: 0 }],
     });
   };
 
   const validateForm = () => {
     const validationErrors = {};
-    if (!formData.customer)
-      validationErrors.customer = "Customer ID is required.";
+    if (!currentUser?.id) validationErrors.customer = "User not logged in.";
     if (
       formData.items.length === 0 ||
-      !formData.items.every((item) => item.name)
+      !formData.items.every((item) => item.product)
     ) {
-      validationErrors.items = "At least one item with a name is required.";
+      validationErrors.items =
+        "At least one item with a product name is required.";
     }
     if (!formData.deliveryDate)
       validationErrors.deliveryDate = "Delivery date is required.";
@@ -79,45 +170,54 @@ const OrderPlacement = () => {
     if (formData.paymentStatus !== "Paid") {
       validationErrors.paymentStatus = "Payment status must be 'Paid'.";
     }
+    if (!formData.deliveryZone) {
+      validationErrors.deliveryZone =
+        "No matching delivery zone found for the selected locations.";
+    }
     setErrors(validationErrors);
+    console.log("Validation Errors:", validationErrors); // Add this line
     return Object.keys(validationErrors).length === 0;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("button clicked");
     if (!validateForm()) return;
 
     try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const orderData = {
+        ...formData,
+        customer: currentUser.id, // Add the logged-in user's ID
+      };
+
+      const response = await createOrder(orderData).unwrap(); // Use the mutation
+      setMessage("Order placed successfully!");
+      setBackendResponse(response); // Store the backend response
+      setFormData({
+        items: [{ product: "", quantity: 1, price: 0 }],
+        totalAmount: 0,
+        pickupAddress: { type: "Point", coordinates: [0, 0] },
+        dropoffAddress: { type: "Point", coordinates: [0, 0] },
+        deliveryDate: "",
+        paymentStatus: "Paid",
+        deliveryZone: "",
       });
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
-        setFormData({
-          customer: "",
-          items: [{ name: "", quantity: 1, price: 0 }],
-          totalAmount: 0,
-          pickupAddress: { coordinates: [0, 0] },
-          dropoffAddress: { coordinates: [0, 0] },
-          deliveryDate: "",
-          paymentStatus: "Paid",
-        });
-      } else {
-        setErrors({ form: data.message || "Order placement failed." });
-      }
     } catch (error) {
-      setErrors({ form: "An error occurred while placing the order." });
+      setErrors({ form: error.data?.message || "Order placement failed." });
+      setBackendResponse(error.data); // Store the backend error response
     }
   };
 
   const handleMapSubmit = (locations) => {
     setFormData((prev) => ({
       ...prev,
-      pickupAddress: locations.pickup,
-      dropoffAddress: locations.dropoff,
+      pickupAddress: {
+        type: "Point",
+        coordinates: [locations.pickup.lng, locations.pickup.lat],
+      },
+      dropoffAddress: {
+        type: "Point",
+        coordinates: [locations.dropoff.lng, locations.dropoff.lat],
+      },
     }));
     setIsMapOpen(false);
   };
@@ -129,29 +229,6 @@ const OrderPlacement = () => {
           Place an Order
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Customer ID */}
-          <div>
-            <label
-              htmlFor="customer"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Customer ID
-            </label>
-            <input
-              type="text"
-              id="customer"
-              name="customer"
-              value={formData.customer}
-              onChange={handleInputChange}
-              className={`mt-1 block w-full rounded-md border ${
-                errors.customer ? "border-red-500" : "border-gray-300"
-              } shadow-sm`}
-            />
-            {errors.customer && (
-              <p className="mt-1 text-sm text-red-500">{errors.customer}</p>
-            )}
-          </div>
-
           {/* Order Items */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -161,9 +238,9 @@ const OrderPlacement = () => {
               <div key={index} className="mb-2 flex space-x-4">
                 <input
                   type="text"
-                  name="name"
-                  placeholder="Item Name"
-                  value={item.name}
+                  name="product"
+                  placeholder="Product Name"
+                  value={item.product}
                   onChange={(e) => handleItemChange(index, e)}
                   className="block w-full rounded-md border-gray-300 shadow-sm"
                 />
@@ -225,6 +302,29 @@ const OrderPlacement = () => {
             )}
           </div>
 
+          {/* Delivery Zone */}
+          <div>
+            <label
+              htmlFor="deliveryZone"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Delivery Zone
+            </label>
+            <input
+              type="text"
+              id="deliveryZone"
+              name="deliveryZone"
+              value={formData.deliveryZone}
+              readOnly
+              className={`mt-1 block w-full rounded-md border ${
+                errors.deliveryZone ? "border-red-500" : "border-gray-300"
+              } shadow-sm`}
+            />
+            {errors.deliveryZone && (
+              <p className="mt-1 text-sm text-red-500">{errors.deliveryZone}</p>
+            )}
+          </div>
+
           {/* Delivery Address */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -258,9 +358,10 @@ const OrderPlacement = () => {
           {/* Submit Button */}
           <button
             type="submit"
+            disabled={isLoading}
             className="mt-6 w-full rounded-md bg-blue-500 px-6 py-2 text-lg font-semibold text-white hover:bg-blue-600"
           >
-            Place Order
+            {isLoading ? "Placing Order..." : "Place Order"}
           </button>
         </form>
 
@@ -274,6 +375,8 @@ const OrderPlacement = () => {
             {errors.form}
           </div>
         )}
+
+        {/* Backend Response */}
       </div>
 
       {/* Map Modal */}
