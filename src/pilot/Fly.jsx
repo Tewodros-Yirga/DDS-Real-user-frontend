@@ -12,6 +12,7 @@ import io from "socket.io-client";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png"; // Webpack handles the import
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+import DroneTrackingMap from "../features/orders/DroneTrackingMap";
 
 // Fix for missing Leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -81,24 +82,31 @@ const Fly = () => {
   return (
     <div className="flex h-screen">
       {/* Drone Controller Section */}
-      <div className="w-1/2 p-6 bg-gray-50 custom-scrollbar" style={{ overflowY: "auto" }}>
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Quadcopter Control</h1>
+      <div
+        className="custom-scrollbar w-1/2 bg-gray-50 p-6"
+        style={{ overflowY: "auto" }}
+      >
+        <h1 className="mb-6 text-3xl font-bold text-gray-800">
+          Quadcopter Control
+        </h1>
 
         {/* Camera Feed Section */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-700">Live Camera Feed</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-700">
+              Live Camera Feed
+            </h2>
             <button
               onClick={() => setIsCameraOn(!isCameraOn)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
             >
               {isCameraOn ? "Turn Off Camera" : "Turn On Camera"}
             </button>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             {isCameraOn ? (
               <iframe
-                src="http://192.168.43.53" // Replace with your ESP32-CAM IP address
+                src="http://192.168.43.187" // Replace with your ESP32-CAM IP address
                 title="Quadcopter Camera Feed"
                 width="100%"
                 height="500px"
@@ -106,7 +114,7 @@ const Fly = () => {
                 allowFullScreen
               />
             ) : (
-              <div className="flex items-center justify-center h-64 bg-gray-200 rounded-lg">
+              <div className="flex h-64 items-center justify-center rounded-lg bg-gray-200">
                 <p className="text-gray-500">Camera is turned off.</p>
               </div>
             )}
@@ -115,12 +123,14 @@ const Fly = () => {
 
         {/* Quadcopter Controls Section */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Quadcopter Controls</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">
+            Quadcopter Controls
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {/* Takeoff Button */}
             <button
               onClick={handleTakeoff}
-              className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors"
+              className="rounded-lg bg-green-500 px-6 py-3 text-white transition-colors hover:bg-green-600"
             >
               Takeoff
             </button>
@@ -128,7 +138,7 @@ const Fly = () => {
             {/* Land Button */}
             <button
               onClick={handleLand}
-              className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors"
+              className="rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600"
             >
               Land
             </button>
@@ -136,7 +146,7 @@ const Fly = () => {
             {/* Emergency Stop Button */}
             <button
               onClick={() => setQuadcopterStatus("Emergency Stopped")}
-              className="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors"
+              className="rounded-lg bg-yellow-500 px-6 py-3 text-white transition-colors hover:bg-yellow-600"
             >
               Emergency Stop
             </button>
@@ -144,7 +154,7 @@ const Fly = () => {
             {/* Reset Button */}
             <button
               onClick={() => setQuadcopterStatus("Idle")}
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+              className="rounded-lg bg-blue-500 px-6 py-3 text-white transition-colors hover:bg-blue-600"
             >
               Reset
             </button>
@@ -153,8 +163,10 @@ const Fly = () => {
 
         {/* Quadcopter Status Section */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Quadcopter Status</h2>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">
+            Quadcopter Status
+          </h2>
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <p className="text-lg font-semibold text-gray-800">
               Current Status:{" "}
               <span
@@ -162,10 +174,10 @@ const Fly = () => {
                   quadcopterStatus === "Idle"
                     ? "text-gray-500"
                     : quadcopterStatus === "In Flight"
-                    ? "text-green-500"
-                    : quadcopterStatus === "Emergency Stopped"
-                    ? "text-red-500"
-                    : "text-yellow-500"
+                      ? "text-green-500"
+                      : quadcopterStatus === "Emergency Stopped"
+                        ? "text-red-500"
+                        : "text-yellow-500"
                 }`}
               >
                 {quadcopterStatus}
@@ -176,41 +188,14 @@ const Fly = () => {
       </div>
 
       {/* Drone Tracking Section */}
-      <div className="w-1/2 p-6 bg-gray-50 custom-scrollbar" style={{ overflowY: "auto" }}>
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Drone Tracking</h1>
-
-        {/* GPS Information Display */}
-        <div className="w-full max-w-md rounded bg-gray-700 p-4 text-center shadow mb-4">
-          <h2 className="text-lg font-bold">Drone GPS Information</h2>
-          <p>
-            <strong>Date:</strong> {gpsInfo.date}
-          </p>
-          <p>
-            <strong>Time:</strong> {gpsInfo.time}
-          </p>
-          <p>
-            <strong>Current Position:</strong> Lat: {dronePosition ? dronePosition[0] : "N/A"}, Lng:{" "}
-            {dronePosition ? dronePosition[1] : "N/A"}
-          </p>
-        </div>
-
-        {/* Map Display */}
-        {dronePosition && (
-          <MapContainer
-            center={dronePosition}
-            zoom={15}
-            style={{ height: "500px", width: "100%" }}
-            className="rounded shadow"
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <UpdateMapView center={dronePosition} />
-            <Marker position={dronePosition} />
-            <Polyline positions={dronePath} color="blue" />
-          </MapContainer>
-        )}
+      <div
+        className="custom-scrollbar w-1/2 bg-gray-50 p-6"
+        style={{ overflowY: "auto" }}
+      >
+        <h1 className="mb-6 text-3xl font-bold text-gray-800">
+          Drone Tracking
+        </h1>
+        <DroneTrackingMap />
       </div>
     </div>
   );
