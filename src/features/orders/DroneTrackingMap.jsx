@@ -62,7 +62,7 @@ const DroneTrackingMap = () => {
 
   if (!dronePosition) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center text-black">
         <p>Loading map and GPS data...</p>
       </div>
     ); // Show until GPS data is received
@@ -71,7 +71,7 @@ const DroneTrackingMap = () => {
   return (
     <div className="flex flex-col items-center space-y-4 p-4">
       {/* GPS Information Display */}
-      <div className="w-full max-w-md rounded bg-gray-100 p-4 text-center shadow">
+      <div className="w-full max-w-md rounded bg-gray-700 p-4 text-center shadow">
         <h2 className="text-lg font-bold">Drone GPS Information</h2>
         <p>
           <strong>Date:</strong> {gpsInfo.date}
