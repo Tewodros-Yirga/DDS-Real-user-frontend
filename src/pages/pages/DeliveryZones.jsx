@@ -18,7 +18,7 @@ import {
   useDeleteDeliveryZoneMutation,
 } from "../../features/landingPage/deliveryZonesApiSlice";
 import { useGetUsersQuery } from "../../features/users/usersApiSlice";
-import { useGetQuadcoptersQuery } from "../quadcopter/quadcopter";
+import { useGetQuadcoptersQuery } from "../quadcopter/quadcoptersApiSlice";
 import EditDeliveryZoneForm from "./EditDeliveryZone";
 import MapModal from "./MapModal";
 
@@ -50,13 +50,24 @@ const DeliveryZoneForm = ({ onCloseModal }) => {
     });
   };
   // Fetch pilots
-  const { data: users = [], isLoading: isLoadingPilots } = useGetUsersQuery();
+  const { data: users = [], isLoading: isLoadingPilots } = useGetUsersQuery(
+    undefined,
+    {
+      pollingInterval: 15000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    },
+  );
   const usersArray = users?.ids?.map((id) => users.entities[id]) || [];
   const pilots = usersArray?.filter((user) => user.roles.includes("Pilot"));
 
   // Fetch quadcopters
   const { data: quadcopters = [], isLoading: isLoadingQuadcopters } =
-    useGetQuadcoptersQuery();
+    useGetQuadcoptersQuery(undefined, {
+      pollingInterval: 60000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    });
   const quadcoptersArray =
     quadcopters?.ids?.map((id) => quadcopters.entities[id]) || [];
 
@@ -221,7 +232,11 @@ const DeliveryZones = () => {
     isError,
     error,
     refetch, // Add refetch to update the UI after deletion
-  } = useGetDeliveryZonesQuery();
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 60000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   const [deleteDeliveryZone] = useDeleteDeliveryZoneMutation();
 

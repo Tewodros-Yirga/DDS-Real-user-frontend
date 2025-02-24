@@ -10,7 +10,16 @@ import {
 import { useSelector } from "react-redux";
 
 const DeliveryZone = () => {
-  const { data: zones, isLoading, isError, error } = useGetDeliveryZonesQuery();
+  const {
+    data: zones,
+    isLoading,
+    isError,
+    error,
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
   const [mapCenter, setMapCenter] = useState({
     lat: 9.035837172515716,
     lng: 38.752291674100675,

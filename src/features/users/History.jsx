@@ -18,7 +18,6 @@ import {
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../features/auth/authSlice"; // Adjust the import path as needed
 
-
 const { useBreakpoint } = Grid;
 
 const History = () => {
@@ -33,13 +32,21 @@ const History = () => {
     isLoading: isOrderLoading,
     isError: isOrdersError,
     error: ordersError,
-  } = useGetAllOrdersQuery({
-    status: "", // Add filters if needed
-    customer: "", // Replace with the current user's ID if needed
-    pilot: "",
-    page: 1,
-    limit: 10,
-  });
+  } = useGetAllOrdersQuery(
+    {
+      status: "", // Add filters if needed
+      customer: "", // Replace with the current user's ID if needed
+      pilot: "",
+      page: 1,
+      limit: 10,
+    },
+    undefined,
+    {
+      pollingInterval: 15000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   // Fetch delivery zones
   const {
@@ -47,7 +54,11 @@ const History = () => {
     isLoading: isDeliveryZonesLoading,
     isError: isDeliveryZonesError,
     error: deliveryZonesError,
-  } = useGetDeliveryZonesQuery();
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 60000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   // Use useSelector at the top level to get the normalized delivery zones data
   const deliveryZoneMap = useSelector((state) => {
@@ -69,28 +80,29 @@ const History = () => {
   if (isDeliveryZonesError)
     return <div>Error: {deliveryZonesError.message}</div>;
 
+  const filteredOrders = ordersData?.docs?.filter(
+    (order) => order.customer._id === userId,
+  );
 
-  const filteredOrders = ordersData?.docs?.filter(order => order.customer._id === userId);
-
-// Transform the filtered data to match the table structure
-const data = filteredOrders?.map((order) => ({
-  key: order._id,
-  orderId: order.orderNumber,
-  customerName: order.customer.username,
-  date: new Date(order.deliveryDate).toLocaleDateString(),
-  amount: order.totalAmount,
-  status: order.status,
-  deliveryZone: deliveryZoneMap[order.deliveryZone] || "N/A", // Use the delivery zone name
-  items: order.items,
-  deliveryDate: new Date(order.deliveryDate).toLocaleDateString(),
-  completed: order.completed ? "Yes" : "No",
-  deliveryAddress: order.deliveryAddress,
-  rescheduledDate: order.rescheduledDate,
-  cancellationReason: order.cancellationReason,
-  refundPercentage: order.refundPercentage,
-  pilot: order.pilot,
-  quadcopter: order.quadcopter,
-}));
+  // Transform the filtered data to match the table structure
+  const data = filteredOrders?.map((order) => ({
+    key: order._id,
+    orderId: order.orderNumber,
+    customerName: order.customer.username,
+    date: new Date(order.deliveryDate).toLocaleDateString(),
+    amount: order.totalAmount,
+    status: order.status,
+    deliveryZone: deliveryZoneMap[order.deliveryZone] || "N/A", // Use the delivery zone name
+    items: order.items,
+    deliveryDate: new Date(order.deliveryDate).toLocaleDateString(),
+    completed: order.completed ? "Yes" : "No",
+    deliveryAddress: order.deliveryAddress,
+    rescheduledDate: order.rescheduledDate,
+    cancellationReason: order.cancellationReason,
+    refundPercentage: order.refundPercentage,
+    pilot: order.pilot,
+    quadcopter: order.quadcopter,
+  }));
 
   const columns = [
     {
@@ -195,7 +207,9 @@ const data = filteredOrders?.map((order) => ({
       style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
     >
       <Card
-        title={<h2 className="text-lg font-bold text-gray-800">Order History</h2>}
+        title={
+          <h2 className="text-lg font-bold text-gray-800">Order History</h2>
+        }
         className="border shadow-sm"
       >
         {screens.md ? (
@@ -265,7 +279,9 @@ const data = filteredOrders?.map((order) => ({
                         <p>
                           <strong>Rescheduled Date:</strong>{" "}
                           {item.rescheduledDate
-                            ? new Date(item.rescheduledDate).toLocaleDateString()
+                            ? new Date(
+                                item.rescheduledDate,
+                              ).toLocaleDateString()
                             : "N/A"}
                         </p>
                         <p>
@@ -279,7 +295,8 @@ const data = filteredOrders?.map((order) => ({
                             : "N/A"}
                         </p>
                         <p>
-                          <strong>Pilot:</strong> {item.pilot?.username || "N/A"}
+                          <strong>Pilot:</strong>{" "}
+                          {item.pilot?.username || "N/A"}
                         </p>
                         <p>
                           <strong>Quadcopter:</strong>{" "}

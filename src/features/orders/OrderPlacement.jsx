@@ -34,7 +34,11 @@ const OrderPlacement = () => {
     isLoading: isZonesLoading,
     isError: isZonesError,
     error: zonesError,
-  } = useGetDeliveryZonesQuery();
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
   const [formData, setFormData] = useState({
     items: [{ product: "", quantity: 1, price: 0 }],
     totalAmount: 0,

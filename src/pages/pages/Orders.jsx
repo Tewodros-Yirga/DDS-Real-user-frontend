@@ -28,13 +28,21 @@ const Orders = () => {
     isLoading: isOrderLoading,
     isError: isOrdersError,
     error: ordersError,
-  } = useGetAllOrdersQuery({
-    status: "", // Add filters if needed
-    customer: "",
-    pilot: "",
-    page: 1,
-    limit: 10,
-  });
+  } = useGetAllOrdersQuery(
+    {
+      status: "", // Add filters if needed
+      customer: "",
+      pilot: "",
+      page: 1,
+      limit: 10,
+    },
+    undefined,
+    {
+      pollingInterval: 15000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   // Fetch delivery zones
   const {
@@ -42,7 +50,11 @@ const Orders = () => {
     isLoading: isDeliveryZonesLoading,
     isError: isDeliveryZonesError,
     error: deliveryZonesError,
-  } = useGetDeliveryZonesQuery();
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 60000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   // Use useSelector at the top level to get the normalized delivery zones data
   const deliveryZoneMap = useSelector((state) => {

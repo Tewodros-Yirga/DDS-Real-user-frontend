@@ -11,6 +11,8 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "../auth/authSlice";
 import { useLoginMutation } from "../auth/authApiSlice";
 
+import usePersist from "../../hooks/usePersist";
+
 const SignIn = ({ onClose, switchToNewAccount }) => {
   const [isShowPassword, setIsShowedPassword] = useState(false);
 
@@ -26,6 +28,8 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [persist, setPersist] = usePersist();
 
   const [login, { isLoading }] = useLoginMutation();
 
@@ -61,6 +65,7 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
 
   const handleUserInput = (e) => setUsername(e.target.value);
   const handlePwdInput = (e) => setPassword(e.target.value);
+  const handleToggle = () => setPersist((prev) => !prev);
 
   const errClass = errMsg ? "errmsg" : "offscreen";
 
@@ -142,6 +147,16 @@ const SignIn = ({ onClose, switchToNewAccount }) => {
             <Button className="mt-6 h-11 w-full cursor-pointer rounded-md text-lg font-medium text-white transition-all duration-500 hover:scale-105 hover:text-color-1">
               LogIn
             </Button>
+
+            <label htmlFor="persist">
+              <input
+                type="checkbox"
+                id="persist"
+                onChange={handleToggle}
+                checked={persist}
+              />
+              Trust This Device
+            </label>
             <div className="my-6 text-center text-sm font-medium text-white">
               <p>
                 Don't have an account?{" "}

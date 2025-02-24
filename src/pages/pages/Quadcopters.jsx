@@ -14,7 +14,7 @@ import {
   useAddQuadcopterMutation,
   useGetQuadcoptersQuery,
   useDeleteQuadcopterMutation,
-} from "../quadcopter/quadcopter"; // Adjust the import path
+} from "../quadcopter/quadcoptersApiSlice"; // Adjust the import path
 import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice"; // Adjust the import path
 import { useGetUsersQuery } from "../../features/users/usersApiSlice"; // Adjust the import path
 
@@ -35,12 +35,23 @@ const QuadcopterForm = ({ onCloseModal }) => {
     data: deliveryZones = [],
     error: deliveryZoneError,
     isLoadingZones,
-  } = useGetDeliveryZonesQuery();
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 60000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
   const deliveryZonesArray =
     deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
 
   // Fetch pilots
-  const { data: users = [], isLoading: isLoadingPilots } = useGetUsersQuery();
+  const { data: users = [], isLoading: isLoadingPilots } = useGetUsersQuery(
+    undefined,
+    {
+      pollingInterval: 15000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    },
+  );
   const usersArray = users?.ids?.map((id) => users.entities[id]) || [];
   console.log(usersArray);
   const selectedDeliveryZone = formData.deliveryZone;
@@ -175,7 +186,11 @@ const Quadcopters = () => {
     isError,
     error,
     refetch, // Add refetch to update the UI after deletion
-  } = useGetQuadcoptersQuery();
+  } = useGetQuadcoptersQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   const [deleteQuadcopter] = useDeleteQuadcopterMutation();
 
@@ -364,7 +379,11 @@ const Quadcopters = () => {
                   <Button type="primary" ghost>
                     Edit
                   </Button>
-                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
+                  <Button
+                    type="text"
+                    danger
+                    onClick={() => handleDelete(item.id)}
+                  >
                     Delete
                   </Button>
                 </div>

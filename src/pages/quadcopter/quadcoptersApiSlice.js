@@ -5,7 +5,7 @@ const quadcoptersAdapter = createEntityAdapter({});
 
 const initialState = quadcoptersAdapter.getInitialState();
 
-export const quadcopterApiSlice = apiSlice.injectEndpoints({
+export const quadcoptersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getQuadcopters: builder.query({
       query: () => "/quadcopters",
@@ -79,10 +79,10 @@ export const {
   useAddQuadcopterMutation,
   useUpdateQuadcopterMutation,
   useDeleteQuadcopterMutation,
-} = quadcopterApiSlice;
+} = quadcoptersApiSlice;
 // returns the query result object
 export const selectQuadcoptersResult =
-  quadcopterApiSlice.endpoints.getQuadcopters.select();
+  quadcoptersApiSlice.endpoints.getQuadcopters.select();
 
 // creates memoized selector
 const selectQuadcoptersData = createSelector(

@@ -1,4 +1,11 @@
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, FaGithub } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+  FaGithub,
+} from "react-icons/fa";
 import Section from "../design/Section";
 
 const DashFooter = () => {
@@ -21,7 +28,10 @@ const DashFooter = () => {
           </p>
           <ul className="flex flex-wrap gap-12">
             {socialMedia.map((platform, index) => (
-              <div key={index} className="flex items-center justify-center bg-gray-700">
+              <div
+                key={index}
+                className="flex items-center justify-center bg-gray-700"
+              >
                 <a
                   href="#"
                   className="group relative flex h-[55px] w-[55px] items-center justify-center"
@@ -34,10 +44,14 @@ const DashFooter = () => {
                       ></span>
                     ))}
                   </div>
-                  <div className={`text-center text-[30px] leading-[55px] text-white group-hover:text-${platform.color}`}>
+                  <div
+                    className={`text-center text-[30px] leading-[55px] text-white group-hover:text-${platform.color}`}
+                  >
                     {platform.icon}
                   </div>
-                  <div className="absolute top-[70px] text-white">{platform.label}</div>
+                  <div className="absolute top-[70px] text-white">
+                    {platform.label}
+                  </div>
                 </a>
               </div>
             ))}

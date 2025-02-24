@@ -75,7 +75,16 @@ const OrderingMap = ({ onSubmit }) => {
   const [distance, setDistance] = useState(null);
 
   // Fetch delivery zones
-  const { data: zones, isLoading, isError, error } = useGetDeliveryZonesQuery();
+  const {
+    data: zones,
+    isLoading,
+    isError,
+    error,
+  } = useGetDeliveryZonesQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
   const deliveryZones = useSelector(selectAllDeliveryZones) || []; // Fallback to empty array
 
   useEffect(() => {

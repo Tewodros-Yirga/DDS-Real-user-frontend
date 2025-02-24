@@ -1,7 +1,10 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Card, Button, Space, Grid, Spin, Alert, Modal } from "antd";
-import { useGetUsersQuery,useDeleteUserMutation,  useUpdateUserMutation } from "../../features/users/usersApiSlice"; // Adjust the import path
-
+import {
+  useGetUsersQuery,
+  useDeleteUserMutation,
+  useUpdateUserMutation,
+} from "../../features/users/usersApiSlice"; // Adjust the import path
 
 const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
   const [formData, setFormData] = useState({
@@ -50,7 +53,10 @@ const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-lg border p-4 shadow"
+    >
       <div className="mb-4">
         <label className="block text-sm font-medium">Username</label>
         <input
@@ -58,9 +64,11 @@ const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+        {errors.username && (
+          <p className="text-sm text-red-500">{errors.username}</p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -70,9 +78,9 @@ const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
       </div>
 
       <div className="mb-4">
@@ -82,9 +90,9 @@ const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
       </div>
 
       <div className="mb-4">
@@ -94,21 +102,22 @@ const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
           name="address"
           value={formData.address}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        {errors.address && (
+          <p className="text-sm text-red-500">{errors.address}</p>
+        )}
       </div>
 
       <button
         type="submit"
-        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="w-full rounded bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
         Update Customer
       </button>
     </form>
   );
 };
-
 
 // CustomerForm component for adding a new customer
 const CustomerForm = ({ onCloseModal }) => {
@@ -147,7 +156,10 @@ const CustomerForm = ({ onCloseModal }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-lg border p-4 shadow"
+    >
       <div className="mb-4">
         <label className="block text-sm font-medium">Username</label>
         <input
@@ -155,9 +167,11 @@ const CustomerForm = ({ onCloseModal }) => {
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+        {errors.username && (
+          <p className="text-sm text-red-500">{errors.username}</p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -167,9 +181,9 @@ const CustomerForm = ({ onCloseModal }) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
       </div>
 
       <div className="mb-4">
@@ -179,9 +193,9 @@ const CustomerForm = ({ onCloseModal }) => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
       </div>
 
       <div className="mb-4">
@@ -191,21 +205,22 @@ const CustomerForm = ({ onCloseModal }) => {
           name="address"
           value={formData.address}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        {errors.address && (
+          <p className="text-sm text-red-500">{errors.address}</p>
+        )}
       </div>
 
       <button
         type="submit"
-        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="w-full rounded bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
         Add Customer
       </button>
     </form>
   );
 };
-
 
 const Users = () => {
   const { useBreakpoint } = Grid;
@@ -221,7 +236,11 @@ const Users = () => {
     isError,
     error,
     refetch,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   const [deleteUser] = useDeleteUserMutation();
   const [updateUser] = useUpdateUserMutation();
@@ -239,13 +258,11 @@ const Users = () => {
     setTimeout(() => setEditingUser(user), 0); // Delay update to force re-render
     setIsEditModalOpen(true);
   };
-  
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setEditingUser(null);
   };
-  
 
   const handleUpdateUser = async (id, updatedData) => {
     Modal.confirm({
@@ -271,29 +288,27 @@ const Users = () => {
     });
   };
 
-
-   // Handle delete action with confirmation
-    const handleDelete = (id) => {
-      Modal.confirm({
-        title: "Are you sure you want to delete this User?",
-        content: "This action cannot be undone.",
-        okText: "Yes, delete it",
-        okType: "danger",
-        cancelText: "No, cancel",
-        onOk: async () => {
-          try {
-            await deleteUser({id}).unwrap();
-            refetch(); // Refetch the quadcopters data to update the UI
-          } catch (err) {
-            console.error("Failed to delete a User:", err);
-          }
-        },
-        onCancel: () => {
-          console.log("Deletion canceled");
-        },
-      });
-    };
-
+  // Handle delete action with confirmation
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this User?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "No, cancel",
+      onOk: async () => {
+        try {
+          await deleteUser({ id }).unwrap();
+          refetch(); // Refetch the quadcopters data to update the UI
+        } catch (err) {
+          console.error("Failed to delete a User:", err);
+        }
+      },
+      onCancel: () => {
+        console.log("Deletion canceled");
+      },
+    });
+  };
 
   // Define table columns for customers
   const columns = [
@@ -322,7 +337,9 @@ const Users = () => {
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Button type="link"  onClick={() => handleOpenEditModal(record)}>Edit</Button>
+          <Button type="link" onClick={() => handleOpenEditModal(record)}>
+            Edit
+          </Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -332,11 +349,11 @@ const Users = () => {
   ];
 
   // Filter users to display only customers (assuming customers have no role or a specific role)
-const customerUsers = users
-? users.ids
-    .map((id) => users.entities[id])
-    .filter((user) => user.roles?.includes("Customer")) // Check if the roles array includes "Pilot"
-: [];
+  const customerUsers = users
+    ? users.ids
+        .map((id) => users.entities[id])
+        .filter((user) => user.roles?.includes("Customer")) // Check if the roles array includes "Pilot"
+    : [];
 
   // Transform API data to match the table structure
   const tableData = customerUsers.map((user) => ({
@@ -377,7 +394,11 @@ const customerUsers = users
     >
       <Card
         title={<h2 className="text-lg font-bold text-gray-800">Customers</h2>}
-        extra={<Button type="primary" onClick={handleOpenModal}>Add Customer</Button>}
+        extra={
+          <Button type="primary" onClick={handleOpenModal}>
+            Add Customer
+          </Button>
+        }
         className="border shadow-sm"
       >
         {screens.md ? (
@@ -414,10 +435,18 @@ const customerUsers = users
                   <strong>Address:</strong> {item.address}
                 </p>
                 <div className="mt-2 flex space-x-2">
-                  <Button type="primary" ghost  onClick={() => handleOpenEditModal(item)}>
+                  <Button
+                    type="primary"
+                    ghost
+                    onClick={() => handleOpenEditModal(item)}
+                  >
                     Edit
                   </Button>
-                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
+                  <Button
+                    type="text"
+                    danger
+                    onClick={() => handleDelete(item.id)}
+                  >
                     Delete
                   </Button>
                 </div>

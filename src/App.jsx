@@ -23,10 +23,14 @@ import PieChartPage from "./pages/charts/PieChartPage";
 import DeliveryZones from "./pages/pages/DeliveryZones";
 import History from "./features/users/History";
 import PilotSidebar from "./components/PilotSidebar";
-import PilotDashboard from './pilot/PilotDashboard';
-import PilotOrders from './pilot/PilotOrders';
-import Quadcopter from './pilot/Quadcopter';
-import Fly from './pilot/Fly';
+import PilotDashboard from "./pilot/PilotDashboard";
+import PilotOrders from "./pilot/PilotOrders";
+import Quadcopter from "./pilot/Quadcopter";
+import Fly from "./pilot/Fly";
+import Prefetch from "./features/auth/Prefetch";
+import PersistLogin from "./features/auth/PersistLogin";
+import { ROLES } from "./config/roles";
+import RequireAuth from "./features/auth/RequireAuth";
 
 const AdminLayout = () => {
   return (
@@ -74,26 +78,35 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public Route */}
+
         <Route path="/" element={<DashLayout />}>
-          <Route index element={<LandingPage />} />
-          {/* Authenticated Routes */}
-          <Route path="order-placement" element={<OrderPlacement />} />
-          <Route path="contact-us" element={<ContactUs />} />
-          <Route path="edit-profile" element={<EditProfile />} />
+          <Route element={<Prefetch />}>
+            <Route element={<PersistLogin />}>
+              <Route index element={<LandingPage />} />
+              <Route element={<RequireAuth allowedRoles={[ROLES.Customer]} />}>
+                {/* Authenticated Routes */}
+                <Route path="order-placement" element={<OrderPlacement />} />
+                <Route path="contact-us" element={<ContactUs />} />
+                <Route path="edit-profile" element={<EditProfile />} />
 
-          <Route path="history" element={<History />} />
+                <Route path="history" element={<History />} />
 
-          {/* <Route path="order-history" element={<OrderHistory />} /> */}
-          {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
-
-          {/* Admin routes */}
-
-          <Route path="/admin/*" element={<AdminLayout />} />
-
-          {/* Pilot routes */}
-          <Route path="/pilot/*" element={<PilotLayout />} />
+                {/* <Route path="order-history" element={<OrderHistory />} /> */}
+                {/* <Route path="order-tracking" element={<DroneTrackingMap />} /> */}
+              </Route>
+              {/* Admin routes */}
+              <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+                <Route path="/admin/*" element={<AdminLayout />} />
+              </Route>
+              {/* Pilot routes */}
+              <Route element={<RequireAuth allowedRoles={[ROLES.Pilot]} />}>
+                <Route path="/pilot/*" element={<PilotLayout />} />
+              </Route>
+            </Route>
+          </Route>
         </Route>
       </Routes>
+
       <ButtonGradient />
     </BrowserRouter>
   );

@@ -106,7 +106,7 @@ const Fly = () => {
           <div className="rounded-lg bg-white p-6 shadow-sm">
             {isCameraOn ? (
               <iframe
-                src="http://192.168.43.187" // Replace with your ESP32-CAM IP address
+                src="http://192.168.37.187" // Replace with your ESP32-CAM IP address
                 title="Quadcopter Camera Feed"
                 width="100%"
                 height="500px"

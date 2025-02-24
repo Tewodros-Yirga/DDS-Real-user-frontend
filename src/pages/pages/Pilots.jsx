@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Card,
@@ -14,20 +14,21 @@ import {
   useGetUsersQuery,
   useAddNewUserMutation,
   useDeleteUserMutation,
-  useUpdateUserMutation 
+  useUpdateUserMutation,
 } from "../../features/users/usersApiSlice"; // Adjust the import path
 import { useGetDeliveryZonesQuery } from "../../features/landingPage/deliveryZonesApiSlice";
-
-
-
-
+//import { truncateByDomain } from "recharts/types/util/ChartUtils";
 const EditCustomerForm = ({ user, onCloseModal, onUpdateUser }) => {
   const { data: deliveryZones = [], error: deliveryZoneError } =
-  useGetDeliveryZonesQuery();
-const deliveryZonesArray =
-  deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
+    useGetDeliveryZonesQuery(undefined, {
+      pollingInterval: 60000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    });
+  const deliveryZonesArray =
+    deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
   const [formData, setFormData] = useState({
-    id :user.id,
+    id: user.id,
     username: user.username,
     email: user.email,
     roles: ["Pilot"],
@@ -41,7 +42,7 @@ const deliveryZonesArray =
   // Update formData when the user prop changes
   useEffect(() => {
     setFormData({
-      id:user.id,
+      id: user.id,
       username: user.username,
       email: user.email,
       roles: ["Pilot"],
@@ -78,7 +79,10 @@ const deliveryZonesArray =
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 border rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-lg border p-4 shadow"
+    >
       <div className="mb-4">
         <label className="block text-sm font-medium">Username</label>
         <input
@@ -86,9 +90,11 @@ const deliveryZonesArray =
           name="username"
           value={formData.username}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+        {errors.username && (
+          <p className="text-sm text-red-500">{errors.username}</p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -98,9 +104,9 @@ const deliveryZonesArray =
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
       </div>
 
       <div className="mb-4">
@@ -110,9 +116,9 @@ const deliveryZonesArray =
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
       </div>
 
       <div className="mb-4">
@@ -122,9 +128,11 @@ const deliveryZonesArray =
           name="address"
           value={formData.address}
           onChange={handleChange}
-          className="w-full p-2 border bg-white rounded"
+          className="w-full rounded border bg-white p-2"
         />
-        {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        {errors.address && (
+          <p className="text-sm text-red-500">{errors.address}</p>
+        )}
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium">Delivery Zone</label>
@@ -147,7 +155,7 @@ const deliveryZonesArray =
       </div>
       <button
         type="submit"
-        className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="w-full rounded bg-blue-600 p-2 text-white hover:bg-blue-700"
       >
         Update Pilot
       </button>
@@ -155,14 +163,16 @@ const deliveryZonesArray =
   );
 };
 
-
-
 // PilotForm component for adding a new pilot
 const PilotForm = ({ onCloseModal }) => {
   const [addNewUser, { isLoading, isSuccess, isError, error }] =
     useAddNewUserMutation();
   const { data: deliveryZones = [], error: deliveryZoneError } =
-    useGetDeliveryZonesQuery();
+    useGetDeliveryZonesQuery(undefined, {
+      pollingInterval: 15000,
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    });
   const deliveryZonesArray =
     deliveryZones?.ids?.map((id) => deliveryZones.entities[id]) || [];
 
@@ -323,13 +333,23 @@ const Pilots = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   // Fetch pilots data using the API slice
-  const { data: users, isLoading, isError, error,refetch, } = useGetUsersQuery();
-   const [deleteUser] = useDeleteUserMutation();
- const [updateUser] = useUpdateUserMutation();
+  const {
+    data: users,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetUsersQuery(undefined, {
+    pollingInterval: 15000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
+  const [deleteUser] = useDeleteUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -343,48 +363,46 @@ const Pilots = () => {
     setTimeout(() => setEditingUser(user), 0); // Delay update to force re-render
     setIsEditModalOpen(true);
   };
-  
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setEditingUser(null);
   };
-  
-    const handleUpdateUser = async (id, updatedData) => {
-      Modal.confirm({
-        title: "Are you sure you want to update this user?",
-        content: "This action will modify the user's details.",
-        okText: "Yes, update it",
-        okType: "primary",
-        cancelText: "No, cancel",
-        onOk: async () => {
-          try {
-            // Call your API to update the user here
-            await updateUser({ id, ...updatedData }).unwrap();
-            console.log("Updating user:", id, updatedData);
-            refetch(); // Refetch the users data to update the UI
-            handleCloseEditModal(); // Close the edit modal after successful update
-          } catch (err) {
-            console.error("Failed to update user:", err);
-          }
-        },
-        onCancel: () => {
-          console.log("Update canceled");
-        },
-      });
-    };
-  
+
+  const handleUpdateUser = async (id, updatedData) => {
+    Modal.confirm({
+      title: "Are you sure you want to update this user?",
+      content: "This action will modify the user's details.",
+      okText: "Yes, update it",
+      okType: "primary",
+      cancelText: "No, cancel",
+      onOk: async () => {
+        try {
+          // Call your API to update the user here
+          await updateUser({ id, ...updatedData }).unwrap();
+          console.log("Updating user:", id, updatedData);
+          refetch(); // Refetch the users data to update the UI
+          handleCloseEditModal(); // Close the edit modal after successful update
+        } catch (err) {
+          console.error("Failed to update user:", err);
+        }
+      },
+      onCancel: () => {
+        console.log("Update canceled");
+      },
+    });
+  };
 
   const handleDelete = (id) => {
     // Find the user by ID
     const userToDelete = users.entities[id];
-  
+
     // Check if the user is a pilot
     if (!userToDelete || !userToDelete.roles?.includes("Pilot")) {
       console.error("User is not a pilot or does not exist");
       return;
     }
-  
+
     Modal.confirm({
       title: "Are you sure you want to delete this Pilot?",
       content: "This action cannot be undone.",
@@ -404,7 +422,7 @@ const Pilots = () => {
       },
     });
   };
-  
+
   // Define table columns for pilots
   const columns = [
     {
@@ -438,7 +456,9 @@ const Pilots = () => {
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Button type="link" onClick={() => handleOpenEditModal(record)}>Edit</Button>
+          <Button type="link" onClick={() => handleOpenEditModal(record)}>
+            Edit
+          </Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -543,10 +563,18 @@ const Pilots = () => {
                   {item.assignedQuadcopters?.join(", ") || "None"}
                 </p>
                 <div className="mt-2 flex space-x-2">
-                  <Button type="primary" ghost onClick={() => handleOpenEditModal(item)}>
+                  <Button
+                    type="primary"
+                    ghost
+                    onClick={() => handleOpenEditModal(item)}
+                  >
                     Edit
                   </Button>
-                  <Button type="text" danger onClick={() => handleDelete(item.id)}>
+                  <Button
+                    type="text"
+                    danger
+                    onClick={() => handleDelete(item.id)}
+                  >
                     Delete
                   </Button>
                 </div>
@@ -564,19 +592,19 @@ const Pilots = () => {
         <PilotForm onCloseModal={handleCloseModal} />
       </Modal>
       <Modal
-              title="Edit Customer"
-              open={isEditModalOpen}
-              onCancel={handleCloseEditModal}
-              footer={null}
-            >
-              {editingUser && (
-                <EditCustomerForm
-                  user={editingUser}
-                  onCloseModal={handleCloseEditModal}
-                  onUpdateUser={handleUpdateUser}
-                />
-              )}
-            </Modal>
+        title="Edit Customer"
+        open={isEditModalOpen}
+        onCancel={handleCloseEditModal}
+        footer={null}
+      >
+        {editingUser && (
+          <EditCustomerForm
+            user={editingUser}
+            onCloseModal={handleCloseEditModal}
+            onUpdateUser={handleUpdateUser}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
